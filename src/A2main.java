@@ -1,3 +1,4 @@
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -19,7 +20,23 @@ import java.util.Scanner;
 
 public class A2main {
 
+    private static final String INVALID_ARGS_ERROR = "Usage: java A2main <Pn> <NID>"; // Usage Message.
+
     public static void main(String[] args) {
+
+        // Validate args.
+        if (args.length != 2) {
+            System.out.println(INVALID_ARGS_ERROR);
+            System.exit(-1);
+        }
+
+        // Validate file.
+        String filePath = args[1];
+        File file = new File(filePath);
+        if(!file.exists() || file.isDirectory()) {
+            System.out.println("Error: Invalid file path given for <NID>.\n" + INVALID_ARGS_ERROR);
+            System.exit(-1);
+        }
 
         Scanner sc = new Scanner(System.in);
 
@@ -29,6 +46,8 @@ public class A2main {
                 String[] query = getQueriedNode(sc);
                 String variable = query[0];
                 String value = query[1];
+                System.out.println("variable:"+variable);
+                System.out.println("value:"+value);
                 // execute query of p(variable=value)
                 double result = 0.570501;
                 printResult(result);
@@ -62,6 +81,12 @@ public class A2main {
             case "P4": {
                 // construct the network based on the specification in args[1]
 
+            }
+
+            default: {
+                // Invalid args[0]
+                System.out.println(INVALID_ARGS_ERROR);
+                System.exit(-1);
             }
             break;
         }
