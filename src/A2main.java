@@ -46,35 +46,38 @@ public class A2main {
                 System.out.println("value:" + value);
 
                 BNVariable inputVar = bn.getVariable(variable);
+                // Finish if inputVar has no parents.
+                if (!inputVar.hasParents()) {
+                    double result = value.equals("T") ? inputVar.getProbTable().get(0) : inputVar.getProbTable().get(1);
+                    printResult(result);
+                }
 
                 ArrayList<Double> probtable = new ArrayList<>();
 
-                while (inputVar.hasParents()) {
-                    for (String parent : inputVar.getParents()) {
-                        BNVariable parentVar = bn.getVariable(parent);
-                        for (Double parentProb : parentVar.getProbTable()) {
-                            for (Double childProb : inputVar.getProbTable()) {
-                                probtable.add(parentProb * childProb);
-                            }
+                for (BNVariable v : bn.getVariables()) {
+                    // Skip top node
+                    if (!v.hasParents()) {
+                        for (Double p : v.getProbTable()) {
+                            probtable.add(p);
                         }
-                        if (parentVar.hasParents()) {
-                            System.out.println("continue");
-                            inputVar = parentVar;
-                        } else {
-                            System.out.println("break");
-                            break;
-                        }
+                        continue;
                     }
-                    break;
-                }
+                    Double value1 = probtable.get(0) * v.getProbTable().get(0);
+                    Double value2 = probtable.get(0) * v.getProbTable().get(1);
+                    Double value3 = probtable.get(1) * v.getProbTable().get(2);
+                    Double value4 = probtable.get(1) * v.getProbTable().get(3);
 
-                for (Double prob : probtable) {
-                    System.out.println("prob:" + prob);
-                }
+                    probtable.clear();
 
-                // execute query of p(variable=value)
-                double result = value.equals("T") ? inputVar.getProbTable().get(0) :
-                        inputVar.getProbTable().get(1);
+                    probtable.add(0,value1 + value3);
+                    probtable.add(1,value2 + value4);
+
+                    if (v.getName().equals(inputVar.getName())) {
+                        break;
+                    }
+                }
+                // Finish if inputVar has no parents.
+                double result = value.equals("T") ? probtable.get(0) : probtable.get(1);
                 printResult(result);
             }
             break;
