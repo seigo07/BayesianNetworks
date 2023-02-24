@@ -112,8 +112,8 @@ public class FileManager {
         }
 
         // Output progress to the user.
-        System.out.println("Successfully Read Bayesian Network From File: '" + BNFile.getName() + "'.");
-        System.out.println("-------------------------------------------------------------------------------");
+//        System.out.println("Successfully Read Bayesian Network From File: '" + BNFile.getName() + "'.");
+//        System.out.println("-------------------------------------------------------------------------------");
 
         return bn;
     }
