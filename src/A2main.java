@@ -1,23 +1,10 @@
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
-/********************
- * Starter Code
- *
- * This class contains some examples on how to handle the required inputs and
- * outputs
- *
- * @author lf28
- *
- *         run with
- *         java A2main <Pn> <NID>
- *
- *         Feel free to change and delete parts of the code as you prefer
- *
+/**
+ * Main class.
  */
-
 public class A2main {
 
     private static final String INVALID_ARGS_ERROR = "Usage: java A2main <Pn> <NID>"; // Usage Message.
@@ -33,9 +20,18 @@ public class A2main {
         // Validate file.
         String filePath = args[1];
         File file = new File(filePath);
-        if(!file.exists() || file.isDirectory()) {
+        if (!file.exists() || file.isDirectory()) {
             System.out.println("Error: Invalid file path given for <NID>.\n" + INVALID_ARGS_ERROR);
             System.exit(-1);
+        }
+
+        // Read and generate BN instance from given xml.
+        BN bn = FileManager.readBNFromFile(file);
+        for (BNVariable v : bn.getVariables()) {
+            System.out.println("Name:" + v.getName() + "\n");
+            System.out.println("ParentNames:" + v.getParentNames() + "\n");
+            System.out.println("Outcomes:" + v.getOutcomes() + "\n");
+            System.out.println("ProbTable:" + v.getProbTable() + "\n");
         }
 
         Scanner sc = new Scanner(System.in);
@@ -46,10 +42,39 @@ public class A2main {
                 String[] query = getQueriedNode(sc);
                 String variable = query[0];
                 String value = query[1];
-                System.out.println("variable:"+variable);
-                System.out.println("value:"+value);
+                System.out.println("variable:" + variable);
+                System.out.println("value:" + value);
+
+                BNVariable inputVar = bn.getVariable(variable);
+
+                ArrayList<Double> probtable = new ArrayList<>();
+
+                while (inputVar.hasParents()) {
+                    for (String parent : inputVar.getParents()) {
+                        BNVariable parentVar = bn.getVariable(parent);
+                        for (Double parentProb : parentVar.getProbTable()) {
+                            for (Double childProb : inputVar.getProbTable()) {
+                                probtable.add(parentProb * childProb);
+                            }
+                        }
+                        if (parentVar.hasParents()) {
+                            System.out.println("continue");
+                            inputVar = parentVar;
+                        } else {
+                            System.out.println("break");
+                            break;
+                        }
+                    }
+                    break;
+                }
+
+                for (Double prob : probtable) {
+                    System.out.println("prob:" + prob);
+                }
+
                 // execute query of p(variable=value)
-                double result = 0.570501;
+                double result = value.equals("T") ? inputVar.getProbTable().get(0) :
+                        inputVar.getProbTable().get(1);
                 printResult(result);
             }
             break;
