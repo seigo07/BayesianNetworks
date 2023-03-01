@@ -18,6 +18,23 @@ public class BNVariable {
      * @param outcomes Outcomes of the variable.
      * @param position Position property string used to place the variable in the AISpace tool canvas.
      */
+    public BNVariable(String name, ArrayList<String> outcomes, String position, ArrayList<String> parents, ArrayList<Double> probTable) {
+
+        this.name = name;
+        this.outcomes = outcomes;
+        this.position = position;
+        this.parents = parents;
+        this.probTable = probTable;
+
+    } // BNVariable().
+
+    /**
+     * Constructor:
+     *
+     * @param name Name of the variable.
+     * @param outcomes Outcomes of the variable.
+     * @param position Position property string used to place the variable in the AISpace tool canvas.
+     */
     public BNVariable(String name, ArrayList<String> outcomes, String position) {
 
         this.name = name;
@@ -29,15 +46,8 @@ public class BNVariable {
 
     /**
      * Constructor:
-     *
-     * @param name Name of the variable.
-     * @param outcomes Outcomes of the variable.
-     * @param position Position property string used to place the variable in the AISpace tool canvas.
-     * @param parents Parents of this variable.
-     * @param probTable (Conditional) Probability Table of this variable.
      */
-    public BNVariable(String name, ArrayList<String> outcomes, String position, ArrayList<String> parents,
-                      ArrayList<Double> probTable) {
+    public BNVariable() {
 
         this.name = name;
         this.outcomes = outcomes;

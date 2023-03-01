@@ -83,12 +83,41 @@ public class A2main {
             break;
 
             case "P2": {
+
                 // construct the network based on the specification in args[1]
                 String[] query = getQueriedNode(sc);
                 String variable = query[0];
                 String value = query[1];
                 String[] order = getOrder(sc);
+
                 // execute query of p(variable=value) with given order of elimination
+                HashSet<BNVariable> variables = bn.getVariables();
+                for (String name : order) {
+                    // Get eliminate variables from order
+                    HashSet<BNVariable> eliminateVariables = bn.getEliminateVariables(name);
+                    for (BNVariable v : eliminateVariables) {
+                        if (v.hasParents()) {
+                            BNVariable sumOutVar = new BNVariable();
+                            // In the case of two parents
+                            if (v.getParents().size() == 2) {
+                                sumOutVar = bn.getSumOutVariable(v, bn.getVariable(v.getParents().get(0)), bn.getVariable(v.getParents().get(1)));
+                            // In the case of one parents
+                            } else if (v.getParents().size() == 1) {
+                                sumOutVar = bn.getSumOutVariable(v, bn.getVariable(v.getParents().get(0)));
+                            }
+                            variables.remove(v);
+                            variables.add(sumOutVar);
+                        } else {
+                            variables.remove(v);
+                        }
+                    }
+                    for (BNVariable v : variables) {
+                        System.out.println("variable = " + v.getName() + " parents = " + v.getParentNames());
+                        for (double d : v.getProbTable()) {
+                            System.out.println("prob = " + d);
+                        }
+                    }
+                }
                 double result = 0.05;
                 printResult(result);
             }
