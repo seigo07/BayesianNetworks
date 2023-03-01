@@ -8,16 +8,13 @@ import java.util.HashSet;
  */
 public class VariableElimination {
 
-    private HashMap<String, BNVariable> variables;
+    private ArrayList<BNVariable> variables;
 
     /**
      * Blank Constructor:
      */
-    public VariableElimination(HashSet<BNVariable> variables) {
-        this.variables = new HashMap<>();
-        for (BNVariable v : variables) {
-            addVariable(v);
-        }
+    public VariableElimination(ArrayList<BNVariable> variables) {
+        this.variables = new ArrayList<>(variables);
     }
 
     /**
@@ -26,7 +23,7 @@ public class VariableElimination {
      * Remove a variable from the variables.
      */
     public void addVariable(BNVariable v) {
-        this.variables.put(v.getName(), new BNVariable(v.getName(), v.getOutcomes(), v.getPosition(), v.getParents(), v.getProbTable()));
+        this.variables.add(new BNVariable(v.getName(), v.getOutcomes(), v.getPosition(), v.getParents(), v.getProbTable()));
     }
 
     /**
@@ -34,17 +31,17 @@ public class VariableElimination {
      *
      * @param eliminateVariables eliminate variables.
      */
-    public void removeVariables(HashSet<BNVariable> eliminateVariables) {
+    public void removeVariables(ArrayList<BNVariable> eliminateVariables) {
         for (BNVariable v : eliminateVariables) {
-            variables.remove(v.getName(), v);
+            variables.remove(v);
         }
     }
 
     /**
      * Set variables for Variable Elimination Algorithm.
      */
-    public HashSet<BNVariable> getVariables() {
-        return new HashSet<>(variables.values());
+    public ArrayList<BNVariable> getVariables() {
+        return variables;
     }
 
     /**
@@ -53,35 +50,43 @@ public class VariableElimination {
      * @param name Name of the variable to get.
      * @return Variable object of the variable name requested, null if does not exist.
      */
-    public BNVariable getVariable(String name) {
-        return variables.get(name);
+    public ArrayList<BNVariable> getVariableByName(String name) {
+        ArrayList<BNVariable> variables = new ArrayList<>();
+        for (BNVariable v : getVariables()) {
+//            System.out.println("v = "+ v.getName());
+            if (v.getName().equals(name)) {
+                variables.add(v);
+//                System.out.println("name = "+ v.getName());
+            }
+        }
+        return variables;
     }
 
     /**
      * @return eliminate variables.
      */
-    public HashSet<BNVariable> getEliminateVariables(String name) {
-        HashSet<BNVariable> variables = new HashSet<>();
-        BNVariable sameVar = getVariable(name);
-        variables.add(sameVar);
+    public ArrayList<BNVariable> getEliminateVariables(String name) {
+        ArrayList<BNVariable> variables = new ArrayList<>();
+        ArrayList<BNVariable> sameVars = getVariableByName(name);
+        variables.addAll(sameVars);
         for (BNVariable v : getVariables()) {
             if (v.getParents().contains(name)) {
-                BNVariable var = getVariable(v.getName());
-                variables.add(var);
+                ArrayList<BNVariable> vars = getVariableByName(v.getName());
+                variables.addAll(vars);
             }
         }
-//        for (BNVariable v : variables) {
-//            if (v != null) {
-//                System.out.println("eliminate variable = "+ v.getName());
-//            }
-//        }
+        for (BNVariable v : variables) {
+            if (v != null) {
+                System.out.println("eliminate variable = "+ v.getName());
+            }
+        }
         return variables;
     }
 
     /**
      * @return sum-out variables for one parent.
      */
-    public BNVariable getSumOutVariable(BNVariable var, BNVariable parentVar) {
+    public BNVariable getSumOutVariable(BNVariable var, BNVariable parentVar, boolean isEliminateVar) {
 //        System.out.println("var = " + var.getName());
 //        for (double d : var.getProbTable()) {
 //            System.out.println("prob = " + d);
@@ -90,6 +95,10 @@ public class VariableElimination {
 //        for (double d : parentVar.getProbTable()) {
 //            System.out.println("prob = " + d);
 //        }
+
+        if (isEliminateVar) {
+            return parentVar;
+        }
 
         ArrayList<Double> sumOutProbtable = new ArrayList<>();
 
@@ -102,6 +111,7 @@ public class VariableElimination {
         sumOutProbtable.add(1,falseValue1 + falseValue2);
 
         BNVariable sumOutVariable = new BNVariable(var.getName(), var.getOutcomes(), var.getPosition(), new ArrayList<>(), sumOutProbtable);
+//        System.out.println("sumOutVariable = " + sumOutVariable.getName() + " " + sumOutVariable.getProbTable());
 
         return sumOutVariable;
     }
@@ -109,7 +119,7 @@ public class VariableElimination {
     /**
      * @return sum-out variables for two parent.
      */
-    public BNVariable getSumOutVariableTwoParents(BNVariable var, BNVariable parentVar) {
+    public BNVariable getSumOutVariableTwoParents(BNVariable var, BNVariable parentVar, boolean isEliminateVar) {
 //        System.out.println("var = " + var.getName());
 //        for (double d : var.getProbTable()) {
 //            System.out.println("prob = " + d);
@@ -118,6 +128,9 @@ public class VariableElimination {
 //        for (double d : parentVar.getProbTable()) {
 //            System.out.println("prob = " + d);
 //        }
+
+        if (isEliminateVar) {
+        }
 
         ArrayList<Double> sumOutProbtable = new ArrayList<>();
 

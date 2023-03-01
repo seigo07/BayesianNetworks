@@ -73,4 +73,11 @@ public class BN {
         return new HashSet<>(networkNodes.values());
     } // getVariables().
 
+    public ArrayList<BNVariable> getVariablesArrayList() {
+        ArrayList<BNVariable> variables = new ArrayList<>();
+        for (BNVariable v : networkNodes.values()) {
+            variables.add(v);
+        }
+        return variables;
+    }
 }

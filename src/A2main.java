@@ -42,8 +42,8 @@ public class A2main {
                 String[] query = getQueriedNode(sc);
                 String variable = query[0];
                 String value = query[1];
-                System.out.println("variable:" + variable);
-                System.out.println("value:" + value);
+//                System.out.println("variable:" + variable);
+//                System.out.println("value:" + value);
 
                 BNVariable inputVar = bn.getVariable(variable);
                 // Finish if inputVar has no parents.
@@ -90,35 +90,47 @@ public class A2main {
                 String value = query[1];
                 String[] order = getOrder(sc);
 
+//                String String variable = "N:T"; = query[1];
+//                String variable = "N";
+//                String value = "T";
+//                String[] order = {"J","L","K"};
+
                 // execute query of p(variable=value) with given order of elimination
-                VariableElimination ve = new VariableElimination(bn.getVariables());
+                VariableElimination ve = new VariableElimination(bn.getVariablesArrayList());
                 for (String name : order) {
                     // Get eliminate variables from order
-                    HashSet<BNVariable> eliminateVariables = ve.getEliminateVariables(name);
+                    ArrayList<BNVariable> eliminateVariables = ve.getEliminateVariables(name);
                     VariableElimination newVe = new VariableElimination(ve.getVariables());
                     newVe.removeVariables(eliminateVariables);
                     for (BNVariable v : eliminateVariables) {
                         if (v.hasParents()) {
-                            if (!name.equals(v.getName())) {
-                                BNVariable sumOutVar = new BNVariable();
+                            boolean isEliminateVar = name.equals(v.getName());
+//                            if (!name.equals(v.getName())) {
+                                ArrayList<BNVariable> sumOutVars = new ArrayList<>();
                                 // In the case of two parents
                                 if (v.getParents().size() == 2) {
-                                    sumOutVar = ve.getSumOutVariableTwoParents(v, ve.getVariable(v.getParents().get(1)));
-                                    // In the case of one parents
+                                    for (BNVariable parentVar : ve.getVariableByName(v.getParents().get(v.getParents().indexOf(name)))) {
+                                        sumOutVars.add(ve.getSumOutVariableTwoParents(v, parentVar, isEliminateVar));
+                                    }
+                                // In the case of one parents
                                 } else if (v.getParents().size() == 1) {
-                                    sumOutVar = ve.getSumOutVariable(v, ve.getVariable(v.getParents().get(0)));
+                                    for (BNVariable parentVar : ve.getVariableByName(v.getParents().get(0))) {
+                                        sumOutVars.add(ve.getSumOutVariable(v, parentVar, isEliminateVar));
+                                    }
                                 }
-                                newVe.addVariable(sumOutVar);
-                            }
+                                for (BNVariable sumOutVar : sumOutVars) {
+                                    newVe.addVariable(sumOutVar);
+                                }
+//                            }
                         }
                     }
                     ve = newVe;
-//                    for (BNVariable v : ve.getVariables()) {
-//                        System.out.println("variable = " + v.getName() + " parents = " + v.getParentNames());
-//                        for (double d : v.getProbTable()) {
-//                            System.out.println("prob = " + d);
-//                        }
-//                    }
+                    for (BNVariable v : ve.getVariables()) {
+                        System.out.println("variable = " + v.getName() + " parents = " + v.getParentNames());
+                        for (double d : v.getProbTable()) {
+                            System.out.println("prob = " + d);
+                        }
+                    }
                 }
                 ArrayList<BNVariable> results = new ArrayList<>();
                 for (BNVariable v : ve.getVariables()) {
