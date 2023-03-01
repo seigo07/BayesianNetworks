@@ -109,7 +109,7 @@ public class VariableElimination {
     /**
      * @return sum-out variables for two parent.
      */
-    public BNVariable getSumOutVariable(BNVariable var, BNVariable parentVar1, BNVariable parentVar2) {
+    public BNVariable getSumOutVariableTwoParents(BNVariable var, BNVariable parentVar) {
 //        System.out.println("parentVar1 = " + parentVar1.getName());
 //        for (double d : parentVar1.getProbTable()) {
 //            System.out.println("prob = " + d);
@@ -121,21 +121,22 @@ public class VariableElimination {
 
         ArrayList<Double> sumOutProbtable = new ArrayList<>();
 
-        Double trueValue1 = parentVar1.getProbTable().get(0) * parentVar2.getProbTable().get(0) * var.getProbTable().get(0);
-        Double falseValue1 = parentVar1.getProbTable().get(0) * parentVar2.getProbTable().get(0) * var.getProbTable().get(1);
-        Double trueValue2 = parentVar1.getProbTable().get(0) * parentVar2.getProbTable().get(1) * var.getProbTable().get(2);
-        Double falseValue2 = parentVar1.getProbTable().get(0) * parentVar2.getProbTable().get(1) * var.getProbTable().get(3);
-        Double trueValue3 = parentVar1.getProbTable().get(1) * parentVar2.getProbTable().get(0) * var.getProbTable().get(4);
-        Double falseValue3 = parentVar1.getProbTable().get(1) * parentVar2.getProbTable().get(0) * var.getProbTable().get(5);
-        Double trueValue4 = parentVar1.getProbTable().get(1) * parentVar2.getProbTable().get(1) * var.getProbTable().get(6);
-        Double falseValue4 = parentVar1.getProbTable().get(1) * parentVar2.getProbTable().get(1) * var.getProbTable().get(7);
+        Double trueValue1 = parentVar.getProbTable().get(0) * var.getProbTable().get(0);
+        Double falseValue1 = parentVar.getProbTable().get(0) * var.getProbTable().get(1);
+        Double trueValue2 = parentVar.getProbTable().get(1) * var.getProbTable().get(2);
+        Double falseValue2 = parentVar.getProbTable().get(1) * var.getProbTable().get(3);
+        Double trueValue3 = parentVar.getProbTable().get(0) * var.getProbTable().get(4);
+        Double falseValue3 = parentVar.getProbTable().get(0) * var.getProbTable().get(5);
+        Double trueValue4 = parentVar.getProbTable().get(1) * var.getProbTable().get(6);
+        Double falseValue4 = parentVar.getProbTable().get(1) * var.getProbTable().get(7);
 
         sumOutProbtable.add(0,trueValue1 + trueValue2);
         sumOutProbtable.add(1,falseValue1 + falseValue2);
         sumOutProbtable.add(2,trueValue3 + trueValue4);
         sumOutProbtable.add(3,falseValue3 + falseValue4);
 
-        BNVariable sumOutVariable = new BNVariable(var.getName(), var.getOutcomes(), var.getPosition(), new ArrayList<>(Arrays.asList(parentVar1.getName())), sumOutProbtable);
+        var.removeParents(parentVar.getName());
+        BNVariable sumOutVariable = new BNVariable(var.getName(), var.getOutcomes(), var.getPosition(), var.getParents(), sumOutProbtable);
 
         return sumOutVariable;
     }

@@ -100,7 +100,7 @@ public class A2main {
                             BNVariable sumOutVar = new BNVariable();
                             // In the case of two parents
                             if (v.getParents().size() == 2) {
-                                sumOutVar = ve.getSumOutVariable(v, ve.getVariable(v.getParents().get(0)), ve.getVariable(v.getParents().get(1)));
+                                sumOutVar = ve.getSumOutVariableTwoParents(v, ve.getVariable(v.getParents().get(1)));
                             // In the case of one parents
                             } else if (v.getParents().size() == 1) {
                                 sumOutVar = ve.getSumOutVariable(v, ve.getVariable(v.getParents().get(0)));

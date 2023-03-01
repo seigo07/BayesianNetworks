@@ -191,6 +191,13 @@ public class BNVariable {
     }
 
     /**
+     * @param parent eliminate parent.
+     */
+    public void removeParents(String parent) {
+        this.parents.remove(parent);
+    }
+
+    /**
      * @return Probability table.
      */
     public ArrayList<Double> getProbTable() {
