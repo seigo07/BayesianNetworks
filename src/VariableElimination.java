@@ -70,11 +70,11 @@ public class VariableElimination {
                 variables.add(var);
             }
         }
-        for (BNVariable v : variables) {
-            if (v != null) {
-                System.out.println("eliminate variable = "+ v.getName());
-            }
-        }
+//        for (BNVariable v : variables) {
+//            if (v != null) {
+//                System.out.println("eliminate variable = "+ v.getName());
+//            }
+//        }
         return variables;
     }
 
