@@ -32,7 +32,7 @@ public class VariableElimination {
     /**
      * Remove a variable from the variables.
      *
-     * @param v BNVariable.
+     * @param eliminateVariables eliminate variables.
      */
     public void removeVariables(HashSet<BNVariable> eliminateVariables) {
         for (BNVariable v : eliminateVariables) {
@@ -110,12 +110,12 @@ public class VariableElimination {
      * @return sum-out variables for two parent.
      */
     public BNVariable getSumOutVariableTwoParents(BNVariable var, BNVariable parentVar) {
-//        System.out.println("parentVar1 = " + parentVar1.getName());
-//        for (double d : parentVar1.getProbTable()) {
+//        System.out.println("var = " + var.getName());
+//        for (double d : var.getProbTable()) {
 //            System.out.println("prob = " + d);
 //        }
-//        System.out.println("parentVar2 = " + parentVar2.getName());
-//        for (double d : parentVar2.getProbTable()) {
+//        System.out.println("parentVar = " + parentVar.getName());
+//        for (double d : parentVar.getProbTable()) {
 //            System.out.println("prob = " + d);
 //        }
 

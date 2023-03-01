@@ -95,6 +95,8 @@ public class A2main {
                 for (String name : order) {
                     // Get eliminate variables from order
                     HashSet<BNVariable> eliminateVariables = ve.getEliminateVariables(name);
+                    VariableElimination newVe = new VariableElimination(ve.getVariables());
+                    newVe.removeVariables(eliminateVariables);
                     for (BNVariable v : eliminateVariables) {
                         if (v.hasParents()) {
                             BNVariable sumOutVar = new BNVariable();
@@ -105,10 +107,10 @@ public class A2main {
                             } else if (v.getParents().size() == 1) {
                                 sumOutVar = ve.getSumOutVariable(v, ve.getVariable(v.getParents().get(0)));
                             }
-                            ve.removeVariables(eliminateVariables);
-                            ve.addVariable(sumOutVar);
+                            newVe.addVariable(sumOutVar);
                         }
                     }
+                    ve = newVe;
                     for (BNVariable v : ve.getVariables()) {
                         System.out.println("variable = " + v.getName() + " parents = " + v.getParentNames());
                         for (double d : v.getProbTable()) {
