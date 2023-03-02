@@ -1,3 +1,5 @@
+import org.w3c.dom.Document;
+
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -35,6 +37,16 @@ public class A2main {
         }
 
         Scanner sc = new Scanner(System.in);
+        Document doc;
+        // getting the document of the xml file
+        doc = XMLReader.readXMLFile(filePath);
+        List<Variable> variables = new ArrayList<>();
+        // build the variables for the bayesian network from given document
+        variables = new ArrayList<>(XMLReader.build_variables(doc));
+        // building the bayesian network
+        Network net = new Network(variables);
+        // output text for output file
+        StringBuilder output = new StringBuilder();
 
         switch (args[0]) {
             case "P1": {
@@ -154,8 +166,17 @@ public class A2main {
                 String value = query[1];
                 ArrayList<String[]> evidence = getEvidence(sc);
                 // execute query of p(variable=value|evidence) with an order
-                double result = 0.570501;
+                List<Double> ve_result = net.variable_elimination(variable, value, evidence);
+                double result = ve_result.get(0);
                 printResult(result);
+
+                // need to save output to output txt file...
+                output.append(UtilFunctions.roundFiveDecimalPlaces(ve_result.get(0)));
+                output.append(",");
+                output.append((long)Math.floor(ve_result.get(1)));
+                output.append(",");
+                output.append((long)Math.floor(ve_result.get(2)));
+                System.out.println("output:\n" + output);
             }
             break;
 
