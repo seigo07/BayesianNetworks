@@ -142,14 +142,14 @@ public class Network {
 
         while (!queue.isEmpty()) {
             Variable v = queue.poll();
-//            System.out.println("poll: " + v + ", neighbors: " + getNeighbors(v));
+            System.out.println("poll: " + v + ", neighbors: " + getNeighbors(v));
             for (Variable u : getNeighbors(v)) {
 
-//                System.out.println("V: " + v + ", U: " + u);
+                System.out.println("V: " + v + ", U: " + u);
 
                 // found destination
                 if (u.equals(destination_node)) {
-//                    System.out.println("found " + destination_node);
+                    System.out.println("found " + destination_node);
                     return false;
                 }
 
@@ -157,7 +157,7 @@ public class Network {
                 if (this.parents.get(v.getName()).contains(u)) {
                     queue.add(u);
                     u.setFromChild(true);
-//                    System.out.println(u + " is parent of " + v);
+                    System.out.println(u + " is parent of " + v);
 
                     // u is child of v
                 } else if (visited.get(u) == Visited.NO) {
@@ -165,7 +165,7 @@ public class Network {
                     visited.put(u, Visited.YES);
                     u.setFromChild(false);
 
-//                    System.out.println(u + " is child of " + v);
+                    System.out.println(u + " is child of " + v);
 
                     // found evidence variable
                     if (u.isShaded()) {
@@ -174,7 +174,7 @@ public class Network {
                             u.setFromChild(false);
                         }
 
-//                        System.out.println(u + " is evidence");
+                        System.out.println(u + " is evidence");
                     }
                 }
             }
@@ -254,7 +254,7 @@ public class Network {
     private List<Double> variable_elimination(Variable hypothesis, String hypothesis_value, List<Variable> evidence_variables, List<String> evidence_values) {
 
 //        System.out.println("hypothesis: " + hypothesis + ", hypothesis_value: " + hypothesis_value + ", evidence_variables: " + evidence_variables + ", evidence_values: " + evidence_values + ", hidden: " + hidden);
-//        System.out.println("hypothesis: " + hypothesis + ", hypothesis_value: " + hypothesis_value + ", evidence_variables: " + evidence_variables + ", evidence_values: " + evidence_values);
+        System.out.println("hypothesis: " + hypothesis + ", hypothesis_value: " + hypothesis_value + ", evidence_variables: " + evidence_variables + ", evidence_values: " + evidence_values);
 
         // factor counter that count the number of addition and multiplication operations in variable elimination algorithm
         FactorCounter factorCounter = new FactorCounter();
@@ -308,20 +308,20 @@ public class Network {
                         surprise_result.add(line.getValue());
                         surprise_result.add(0.0);
                         surprise_result.add(0.0);
-//                        System.out.println("FINAL VALUE IS " + line.getValue());
+                        System.out.println("FINAL VALUE IS " + line.getValue());
                         return surprise_result;
                     }
                 }
             }
         }
 
-//        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-//        System.out.println("FACTORS ADDED:");
+        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        System.out.println("FACTORS ADDED:");
         for (Map.Entry<String, LinkedHashMap<String, Double>> f : factors.entrySet()) {
-//            System.out.println(f.getKey() + ":");
-//            System.out.println(UtilFunctions.hashMapToString(f.getValue()));
+            System.out.println(f.getKey() + ":");
+            System.out.println(UtilFunctions.hashMapToString(f.getValue()));
         }
-//        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
 
         // join all factors for each hidden variable
@@ -380,14 +380,14 @@ public class Network {
 //            }
 //        }
 
-//        System.out.println();
-//        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-//        System.out.println("PRINT CURRENT FACTORS:");
+        System.out.println();
+        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        System.out.println("PRINT CURRENT FACTORS:");
         for (Map.Entry<String, LinkedHashMap<String, Double>> f : factors.entrySet()) {
-//            System.out.println("NAME: " + f.getKey());
-//            System.out.println(UtilFunctions.hashMapToString(f.getValue()));
+            System.out.println("NAME: " + f.getKey());
+            System.out.println(UtilFunctions.hashMapToString(f.getValue()));
         }
-//        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
         // removing the factors with size of one or less
         LinkedHashMap<String, Integer> sizes = new LinkedHashMap<>();
@@ -402,12 +402,12 @@ public class Network {
         }
 
         // eliminate again if still the factor contains other different outcomes of
-//        System.out.println("-------------------------------BEFORE END PRINT FACTORS----------------------------------");
+        System.out.println("-------------------------------BEFORE END PRINT FACTORS----------------------------------");
         for (Map.Entry<String, LinkedHashMap<String, Double>> e : factors.entrySet()) {
-//            System.out.println("factor for " + e.getKey() + ", is:");
-//            System.out.println(UtilFunctions.hashMapToString(e.getValue()));
+            System.out.println("factor for " + e.getKey() + ", is:");
+            System.out.println(UtilFunctions.hashMapToString(e.getValue()));
         }
-//        System.out.println("-----------------------------------------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------------------------------------");
 
         // get the last factor
         LinkedHashMap<String, Double> last_factor = new LinkedHashMap<>();
@@ -427,8 +427,8 @@ public class Network {
 
             for (Map.Entry<String, LinkedHashMap<String, Double>> f : factors.entrySet()) {
                 last_factor = new LinkedHashMap<>(f.getValue());
-//                System.out.println("LAST FACTOR:");
-//                System.out.println(UtilFunctions.hashMapToString(last_factor));
+                System.out.println("LAST FACTOR:");
+                System.out.println(UtilFunctions.hashMapToString(last_factor));
                 break;
             }
         }
@@ -444,9 +444,9 @@ public class Network {
 
         // normalize the final_factor
         last_factor = normalize(last_factor, factorCounter);
-//        System.out.println("final_factor: (after normalize)");
-//        System.out.println("factorCounter: " + factorCounter);
-//        System.out.println(UtilFunctions.hashMapToString(last_factor));
+        System.out.println("final_factor: (after normalize)");
+        System.out.println("factorCounter: " + factorCounter);
+        System.out.println(UtilFunctions.hashMapToString(last_factor));
 
         double value = 0.0;
         for (Map.Entry<String, Double> entry : last_factor.entrySet()) {
@@ -456,7 +456,7 @@ public class Network {
             }
         }
 
-//        System.out.println("FINAL VALUE IS " + value);
+        System.out.println("FINAL VALUE IS " + value);
 
         // result list
         List<Double> result = new ArrayList<>();
@@ -538,10 +538,10 @@ public class Network {
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
         factor = UtilFunctions.fixingDuplicatesValuesInKeys(factor);
 
-//        System.out.println("=======================================================================================");
-//        System.out.println("Factor to Normalize:");
-//        System.out.println(UtilFunctions.hashMapToString(factor));
-//        System.out.println("=======================================================================================");
+        System.out.println("=======================================================================================");
+        System.out.println("Factor to Normalize:");
+        System.out.println(UtilFunctions.hashMapToString(factor));
+        System.out.println("=======================================================================================");
 
         LinkedHashMap<String, List<String>> outcomes = CPTBuilder.getNamesAndOutcomes(factor);
         String variable_name = "";
@@ -591,9 +591,9 @@ public class Network {
     }
 
     public void print_childes_parents() {
-//        System.out.println("childes are:");
-//        System.out.println(UtilFunctions.hashMapToString(this.childes));
-//        System.out.println("parents are:");
-//        System.out.println(UtilFunctions.hashMapToString(this.parents));
+        System.out.println("childes are:");
+        System.out.println(UtilFunctions.hashMapToString(this.childes));
+        System.out.println("parents are:");
+        System.out.println(UtilFunctions.hashMapToString(this.parents));
     }
 }
