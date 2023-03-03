@@ -17,11 +17,11 @@ public class CPTBuilder {
     public static LinkedHashMap<String, Double> buildCPTLinkedHashMap(double[] values, List<List<String>> outcomes, List<String> names) {
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
 
-        System.out.println("values: " + Arrays.toString(values));
+//        System.out.println("values: " + Arrays.toString(values));
         for (List<String> o : outcomes) {
-            System.out.println("outcome: " + o);
+//            System.out.println("outcome: " + o);
         }
-        System.out.println("names: " + names);
+//        System.out.println("names: " + names);
 
 
         String[] outputs = new String[values.length];
@@ -111,12 +111,12 @@ public class CPTBuilder {
      */
     public static LinkedHashMap<String, Double> joinTwoFactors(LinkedHashMap<String, Double> X, LinkedHashMap<String, Double> Y, FactorCounter factorCounter) {
 
-        System.out.println("//////////////// JOIN //////////////////////");
-        System.out.println("X:");
-        System.out.println(UtilFunctions.hashMapToString(X));
-        System.out.println("Y:");
-        System.out.println(UtilFunctions.hashMapToString(Y));
-        System.out.println("////////////////////////////////////////////");
+//        System.out.println("//////////////// JOIN //////////////////////");
+//        System.out.println("X:");
+//        System.out.println(UtilFunctions.hashMapToString(X));
+//        System.out.println("Y:");
+//        System.out.println(UtilFunctions.hashMapToString(Y));
+//        System.out.println("////////////////////////////////////////////");
 
         // get the outcome hashmaps for X and Y
         HashMap<String, List<String>> X_outcomes = getNamesAndOutcomes(X);
@@ -172,9 +172,9 @@ public class CPTBuilder {
             }
         }
 
-        System.out.println("\nRESULT AFTER JOIN:");
-        System.out.println(UtilFunctions.hashMapToString(result));
-        System.out.println();
+//        System.out.println("\nRESULT AFTER JOIN:");
+//        System.out.println(UtilFunctions.hashMapToString(result));
+//        System.out.println();
 
         factorCounter.mulAdd(result.size());
 

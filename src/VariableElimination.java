@@ -77,7 +77,7 @@ public class VariableElimination {
         }
         for (BNVariable v : variables) {
             if (v != null) {
-                System.out.println("eliminate variable = "+ v.getName());
+//                System.out.println("eliminate variable = "+ v.getName());
             }
         }
         return variables;

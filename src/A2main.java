@@ -30,10 +30,10 @@ public class A2main {
         // Read and generate BN instance from given xml.
         BN bn = FileManager.readBNFromFile(file);
         for (BNVariable v : bn.getVariables()) {
-            System.out.println("Name:" + v.getName() + "\n");
-            System.out.println("ParentNames:" + v.getParentNames() + "\n");
-            System.out.println("Outcomes:" + v.getOutcomes() + "\n");
-            System.out.println("ProbTable:" + v.getProbTable() + "\n");
+//            System.out.println("Name:" + v.getName() + "\n");
+//            System.out.println("ParentNames:" + v.getParentNames() + "\n");
+//            System.out.println("Outcomes:" + v.getOutcomes() + "\n");
+//            System.out.println("ProbTable:" + v.getProbTable() + "\n");
         }
 
         Scanner sc = new Scanner(System.in);
@@ -137,12 +137,12 @@ public class A2main {
                         }
                     }
                     ve = newVe;
-                    for (BNVariable v : ve.getVariables()) {
-                        System.out.println("variable = " + v.getName() + " parents = " + v.getParentNames());
-                        for (double d : v.getProbTable()) {
-                            System.out.println("prob = " + d);
-                        }
-                    }
+//                    for (BNVariable v : ve.getVariables()) {
+//                        System.out.println("variable = " + v.getName() + " parents = " + v.getParentNames());
+//                        for (double d : v.getProbTable()) {
+//                            System.out.println("prob = " + d);
+//                        }
+//                    }
                 }
                 ArrayList<BNVariable> results = new ArrayList<>();
                 for (BNVariable v : ve.getVariables()) {
@@ -176,7 +176,7 @@ public class A2main {
                 output.append((long)Math.floor(ve_result.get(1)));
                 output.append(",");
                 output.append((long)Math.floor(ve_result.get(2)));
-                System.out.println("output:\n" + output);
+//                System.out.println("output:\n" + output);
             }
             break;
 

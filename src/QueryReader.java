@@ -41,7 +41,7 @@ public class QueryReader {
             }
         }
 
-        System.out.println("OUTPUT: " + output);
+//        System.out.println("OUTPUT: " + output);
 
         return output;
     }
