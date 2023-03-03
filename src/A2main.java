@@ -93,67 +93,25 @@ public class A2main {
             break;
 
             case "P2": {
-
                 // construct the network based on the specification in args[1]
                 String[] query = getQueriedNode(sc);
                 String variable = query[0];
                 String value = query[1];
-                String[] order = getOrder(sc);
+                String[] inputOrder = getOrder(sc);
+                List<String> order = new ArrayList<String>(Arrays.asList(inputOrder));
 
-//                String String variable = "N:T"; = query[1];
-//                String variable = "N";
-//                String value = "T";
-//                String[] order = {"J","L","K"};
+                // execute query of p(variable=value|evidence) with an order
+                List<Double> ve_result = net.variable_elimination(variable, value, new ArrayList<>(), order);
+                double result = ve_result.get(0);
+                printResult(result);
 
-                // execute query of p(variable=value) with given order of elimination
-                VariableElimination ve = new VariableElimination(bn.getVariablesArrayList());
-                for (String name : order) {
-                    // Get eliminate variables from order
-                    ArrayList<BNVariable> eliminateVariables = ve.getEliminateVariables(name);
-                    VariableElimination newVe = new VariableElimination(ve.getVariables());
-                    newVe.removeVariables(eliminateVariables);
-                    for (BNVariable v : eliminateVariables) {
-                        if (v.hasParents()) {
-                            boolean isEliminateVar = name.equals(v.getName());
-//                            if (!name.equals(v.getName())) {
-                                ArrayList<BNVariable> sumOutVars = new ArrayList<>();
-                                // In the case of two parents
-                                if (v.getParents().size() == 2) {
-                                    for (BNVariable parentVar : ve.getVariableByName(v.getParents().get(v.getParents().indexOf(name)))) {
-                                        sumOutVars.add(ve.getSumOutVariableTwoParents(v, parentVar, isEliminateVar));
-                                    }
-                                // In the case of one parents
-                                } else if (v.getParents().size() == 1) {
-                                    for (BNVariable parentVar : ve.getVariableByName(v.getParents().get(0))) {
-                                        sumOutVars.add(ve.getSumOutVariable(v, parentVar, isEliminateVar));
-                                    }
-                                }
-                                for (BNVariable sumOutVar : sumOutVars) {
-                                    newVe.addVariable(sumOutVar);
-                                }
-//                            }
-                        }
-                    }
-                    ve = newVe;
-//                    for (BNVariable v : ve.getVariables()) {
-//                        System.out.println("variable = " + v.getName() + " parents = " + v.getParentNames());
-//                        for (double d : v.getProbTable()) {
-//                            System.out.println("prob = " + d);
-//                        }
-//                    }
-                }
-                ArrayList<BNVariable> results = new ArrayList<>();
-                for (BNVariable v : ve.getVariables()) {
-//                    System.out.println("variable = " + v.getName() + " parents = " + v.getParentNames());
-//                    for (double d : v.getProbTable()) {
-//                        System.out.println("prob = " + d);
-//                    }
-                    results.add(v);
-                }
-                if (results.size() == 1) {
-                    double result = value.equals("T") ? results.get(0).getProbTable().get(0) : results.get(1).getProbTable().get(1);
-                    printResult(result);
-                }
+                // need to save output to output txt file...
+                output.append(UtilFunctions.roundFiveDecimalPlaces(ve_result.get(0)));
+                output.append(",");
+                output.append((long)Math.floor(ve_result.get(1)));
+                output.append(",");
+                output.append((long)Math.floor(ve_result.get(2)));
+//                System.out.println("output:\n" + output);
             }
             break;
 
@@ -164,7 +122,7 @@ public class A2main {
                 String value = query[1];
                 ArrayList<String[]> evidence = getEvidence(sc);
                 // execute query of p(variable=value|evidence) with an order
-                List<Double> ve_result = net.variable_elimination(variable, value, evidence);
+                List<Double> ve_result = net.variable_elimination(variable, value, evidence, new ArrayList<>());
                 double result = ve_result.get(0);
                 printResult(result);
 

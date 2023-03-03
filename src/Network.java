@@ -200,7 +200,7 @@ public class Network {
      * @return the probability value of the query
      */
 //    public List<Double> variable_elimination(String hypothesis, List<String> evidence, List<String> hidden) {
-    public List<Double> variable_elimination(String variable, String value, ArrayList<String[]> evidence) {
+    public List<Double> variable_elimination(String variable, String value, ArrayList<String[]> evidence, List<String> order) {
 
 //        String[] hypothesis_query = hypothesis.split("=");
 //        Variable hypothesis_variable = getVariableByName(hypothesis_query[0]);
@@ -239,7 +239,7 @@ public class Network {
 //        }
 
 //        return variable_elimination(hypothesis_variable, hypothesis_value, evidence_variables, evidence_values, hidden_variables);
-        return variable_elimination(hypothesis_variable, hypothesis_value, evidence_variables, evidence_values);
+        return variable_elimination(hypothesis_variable, hypothesis_value, evidence_variables, evidence_values, order);
     }
 
     /**
@@ -251,7 +251,7 @@ public class Network {
      * @return the probability value of the query
      */
 //    private List<Double> variable_elimination(Variable hypothesis, String hypothesis_value, List<Variable> evidence_variables, List<String> evidence_values, List<Variable> hidden) {
-    private List<Double> variable_elimination(Variable hypothesis, String hypothesis_value, List<Variable> evidence_variables, List<String> evidence_values) {
+    private List<Double> variable_elimination(Variable hypothesis, String hypothesis_value, List<Variable> evidence_variables, List<String> evidence_values, List<String> order) {
 
 //        System.out.println("hypothesis: " + hypothesis + ", hypothesis_value: " + hypothesis_value + ", evidence_variables: " + evidence_variables + ", evidence_values: " + evidence_values + ", hidden: " + hidden);
         System.out.println("hypothesis: " + hypothesis + ", hypothesis_value: " + hypothesis_value + ", evidence_variables: " + evidence_variables + ", evidence_values: " + evidence_values);
@@ -271,6 +271,12 @@ public class Network {
 
         }
 
+//        String[] order = {"J","L","K","N","O","M"};
+//        List<Variable> orderedVariables = new ArrayList<>();
+//        for (String name : order) {
+//            orderedVariables.add(getVariableByName(name));
+//        }
+//        for (Variable variable : orderedVariables) {
         for (Variable variable : this.variables) {
             factors.put(variable.getName(), updateLocalCpt(evidence_variables_names, evidence_values, variable.getCPT()));
         }
@@ -434,7 +440,15 @@ public class Network {
         }
 
         // if the last factor contains values for more than one variable - eliminate again with those variables
-        List<String> names_in_last_factor = CPTBuilder.getNames(last_factor);
+//        List<Variable> orderedVariables = new ArrayList<>();
+//        for (String name : order) {
+//            orderedVariables.add(getVariableByName(name));
+//        }
+//        for (Variable variable : orderedVariables) {
+
+        // Set variable elimination order for Part 2 if order is passed.
+        // If not, set an automatic order for Part 3.
+        List<String> names_in_last_factor = order.isEmpty() ? CPTBuilder.getNames(last_factor) : order;
         if (names_in_last_factor.size() > 1) {
             names_in_last_factor.remove(hypothesis.getName());
             for (String name : names_in_last_factor) {
