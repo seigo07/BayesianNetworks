@@ -60,6 +60,7 @@ public class A2main {
                 if (!inputVar.hasParents()) {
                     double result = value.equals("T") ? inputVar.getProbTable().get(0) : inputVar.getProbTable().get(1);
                     printResult(result);
+                    break;
                 }
 
                 ArrayList<Double> probtable = new ArrayList<>();
