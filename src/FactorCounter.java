@@ -1,31 +1,31 @@
 public class FactorCounter {
 
-    private int sum_count;
-    private int mul_count;
+    private int sumCount;
+    private int mulCount;
 
     public FactorCounter() {
-        this.sum_count = 0;
-        this.mul_count = 0;
+        this.sumCount = 0;
+        this.mulCount = 0;
     }
 
     public void sumAdd(int add) {
-        this.sum_count += add;
+        this.sumCount += add;
     }
 
     public void mulAdd(int mul) {
-        this.mul_count += mul;
+        this.mulCount += mul;
     }
 
     public int getSumCount() {
-        return sum_count;
+        return sumCount;
     }
 
     public int getMulCount() {
-        return mul_count;
+        return mulCount;
     }
 
     @Override
     public String toString() {
-        return this.sum_count + "," + this.mul_count;
+        return this.sumCount + "," + this.mulCount;
     }
 }

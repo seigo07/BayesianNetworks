@@ -69,20 +69,20 @@ public class BNs {
     }
 
     /**
-     * @return - number of variables in the network - |V|
+     * @return - The number of variables
      */
-    public int size() {
+    public int getVariablesSize() {
         return this.variables.size();
     }
 
     /**
-     * getting a variable by his given name
+     * Returning a variable by its name
      *
-     * @param name the name of the variable
-     * @return the variable
+     * @param name
+     * @return variable
      */
     public Variable getVariableByName(String name) {
-        for (int i = 0; i < this.size(); i++) {
+        for (int i = 0; i < this.getVariablesSize(); i++) {
             Variable variable = this.variables.get(i);
             if (variable.getName().equals(name)) {
                 return variable;
@@ -96,52 +96,42 @@ public class BNs {
      * return true if and only if the start_node and the destination_node are independents
      * else, return false
      *
-     * @param start_node            starting variable name position of the BFS algorithm
-     * @param destination_node      the variable the algorithm is searching for
-     * @param evidences_nodes_names evidence variables in the query
+     * @param startNode       starting variable name position of the BFS algorithm
+     * @param destinationNode the variable the algorithm is searching for
+     * @param nodesNames      evidence variables in the query
      * @return true if and only if the start_node and the destination_node are independents
      */
-    public boolean bayes_ball(String start_node, String destination_node, List<String> evidences_nodes_names) {
-        List<Variable> evidences_nodes = new ArrayList<>();
-        if (evidences_nodes_names != null) {
-            for (String name : evidences_nodes_names) {
-                evidences_nodes.add(this.getVariableByName(name));
+    public boolean bayesBall(String startNode, String destinationNode, List<String> nodesNames) {
+        List<Variable> evidencesVariables = new ArrayList<>();
+        if (nodesNames != null) {
+            for (String name : nodesNames) {
+                evidencesVariables.add(this.getVariableByName(name));
             }
         }
-        return bayes_ball(getVariableByName(start_node), getVariableByName(destination_node), evidences_nodes);
-    }
+        Variable startVariable = getVariableByName(startNode);
+        Variable destinationVariable = getVariableByName(destinationNode);
 
-    /**
-     * @param start_node       starting variable position of the BFS algorithm
-     * @param destination_node the variable the algorithm is searching for
-     * @param evidences_nodes  evidence variables in the query
-     * @return true if and only if the start_node and the destination_node are independents
-     */
-    private boolean bayes_ball(Variable start_node, Variable destination_node, List<Variable> evidences_nodes) {
-
-        if (start_node == null || destination_node == null) return true;
-        if (start_node.equals(destination_node)) return false;
+        if (startVariable == null || destinationVariable == null) return true;
+        if (startVariable.equals(destinationVariable)) return false;
         LinkedHashMap<Variable, Visited> visited = new LinkedHashMap<>();
 
         for (Variable variable : this.variables) {
-            variable.setShade(evidences_nodes.contains(variable));
+            variable.setShade(evidencesVariables.contains(variable));
             variable.setFromChild(false);
             visited.put(variable, Visited.NO);
         }
 
-        visited.put(start_node, Visited.YES);
+        visited.put(startVariable, Visited.YES);
         Queue<Variable> queue = new LinkedList<>();
-        queue.add(start_node);
+        queue.add(startVariable);
 
         while (!queue.isEmpty()) {
             Variable v = queue.poll();
 //            System.out.println("poll: " + v + ", neighbors: " + getNeighbors(v));
             for (Variable u : getNeighbors(v)) {
-
 //                System.out.println("V: " + v + ", U: " + u);
-
                 // found destination
-                if (u.equals(destination_node)) {
+                if (u.equals(destinationVariable)) {
 //                    System.out.println("found " + destination_node);
                     return false;
                 }
@@ -151,13 +141,11 @@ public class BNs {
                     queue.add(u);
                     u.setFromChild(true);
 //                    System.out.println(u + " is parent of " + v);
-
-                    // u is child of v
+                // u is child of v
                 } else if (visited.get(u) == Visited.NO) {
                     queue.add(u);
                     visited.put(u, Visited.YES);
                     u.setFromChild(false);
-
 //                    System.out.println(u + " is child of " + v);
 
                     // found evidence variable
@@ -166,7 +154,6 @@ public class BNs {
                         if (v.isShaded()) {
                             u.setFromChild(false);
                         }
-
 //                        System.out.println(u + " is evidence");
                     }
                 }
@@ -174,7 +161,6 @@ public class BNs {
         }
         return true;
     }
-
 
     private List<Variable> getNeighbors(Variable variable) {
         List<Variable> neighbors = new ArrayList<>(this.children.get(variable.getName()));
@@ -225,7 +211,7 @@ public class BNs {
 
         // Adding variables to factors
         for (Variable variable : this.variables) {
-            factors.put(variable.getName(), updateLocalCpt(evidenceVariablesNames, evidenceValues, variable.getCPT()));
+            factors.put(variable.getName(), updateLocalCPT(evidenceVariablesNames, evidenceValues, variable.getCPT()));
         }
 
         // Checking whether one of the factors includes the necessary value of queryVariable alone
@@ -286,13 +272,13 @@ public class BNs {
         // If the factors include more than one factor
         if (factors.size() > 1) {
             List<LinkedHashMap<String, Double>> factorsLeft = new ArrayList<>();
-            for (Map.Entry<String, LinkedHashMap<String, Double>> factor: factors.entrySet()) {
+            for (Map.Entry<String, LinkedHashMap<String, Double>> factor : factors.entrySet()) {
                 factorsLeft.add(factor.getValue());
             }
-            lastFactor = CPTBuilder.joinFactors(factorsLeft, factorCounter);
-        // Getting the one left factor
+            lastFactor = CPTBuilder.integrateFactors(factorsLeft, factorCounter);
+            // Getting the one left factor
         } else {
-            for (Map.Entry<String, LinkedHashMap<String, Double>> factor: factors.entrySet()) {
+            for (Map.Entry<String, LinkedHashMap<String, Double>> factor : factors.entrySet()) {
                 lastFactor = new LinkedHashMap<>(factor.getValue());
 //                System.out.println("LAST FACTOR:");
 //                System.out.println(UtilFunctions.hashMapToString(last_factor));
@@ -300,78 +286,64 @@ public class BNs {
             }
         }
 
-        // if the last factor contains values for more than one variable - eliminate again with those variables
-//        List<Variable> orderedVariables = new ArrayList<>();
-//        for (String name : order) {
-//            orderedVariables.add(getVariableByName(name));
-//        }
-//        for (Variable variable : orderedVariables) {
-
         // Set variable elimination order for Part 2 if order is passed.
         // If not, set an automatic order for Part 3.
-        List<String> names_in_last_factor = order.isEmpty() ? CPTBuilder.getNames(lastFactor) : order;
-        if (names_in_last_factor.size() > 1) {
-            names_in_last_factor.remove(queryVariable.getName());
-            for (String name : names_in_last_factor) {
+        List<String> variableNames = order.isEmpty() ? CPTBuilder.getNames(lastFactor) : order;
+        if (variableNames.size() > 1) {
+            variableNames.remove(queryVariable.getName());
+            for (String name : variableNames) {
                 lastFactor = CPTBuilder.eliminate(lastFactor, getVariableByName(name), factorCounter);
             }
         }
 
-        // normalize the final_factor
+        // Normalizing the lastFactor
         lastFactor = normalize(lastFactor, factorCounter);
-//        System.out.println("final_factor: (after normalize)");
+//        System.out.println("lastFactor: (after normalize)");
 //        System.out.println("factorCounter: " + factorCounter);
-//        System.out.println(UtilFunctions.hashMapToString(last_factor));
+//        System.out.println(UtilFunctions.hashMapToString(lastFactor));
 
-        double value = 0.0;
-        for (Map.Entry<String, Double> entry : lastFactor.entrySet()) {
-            if (entry.getKey().contains(queryValue)) {
-                value = entry.getValue();
+        double probability = 0.0;
+        for (Map.Entry<String, Double> factor : lastFactor.entrySet()) {
+            if (factor.getKey().contains(queryValue)) {
+                probability = factor.getValue();
                 break;
             }
         }
 
 //        System.out.println("FINAL VALUE IS " + value);
 
-        // result list
         List<Double> result = new ArrayList<>();
-
-        // final value
-        result.add(value);
-
-        // number of Additions
+        // The probability for given variable
+        result.add(probability);
+        // The number of Additions
         result.add((double) factorCounter.getSumCount());
-
-        // number of multiples
+        // The number of multiples
         result.add((double) factorCounter.getMulCount());
 
         return result;
     }
 
     /**
-     * this function get a hidden variable with all the evidence variables and their values we get in the variable elimination function
-     * and return the new factor for the hidden variable
-     * (deleting the unrequited values by evidence)
-     * for example if we have the evidence A=T, and the hidden variable B factor contains B values and A values we delete all the A=F values from the factor
+     * Deleting the unrequited values by evidence and return the new factor
      *
-     * @param evidence list of the evidence variable
-     * @param values   list of the values of the evidence variables
-     * @param factor   the factor we eliminate the evidence values
-     * @return the new factor of hidden
+     * @param evidenceList list of the evidence variable
+     * @param valueList    list of the values of the evidence variables
+     * @param factor       the factor we eliminate the evidence values
+     * @return result
      */
-    public static LinkedHashMap<String, Double> updateLocalCpt(List<String> evidence, List<String> values, LinkedHashMap<String, Double> factor) {
+    public static LinkedHashMap<String, Double> updateLocalCPT(List<String> evidenceList, List<String> valueList, LinkedHashMap<String, Double> factor) {
 
-        List<String> variables_name_in_factor = CPTBuilder.getNames(factor);
-        List<String> evidence_variable_in_factor = UtilFunctions.intersection(variables_name_in_factor, evidence);
+        List<String> variablesNames = CPTBuilder.getNames(factor);
+        List<String> evidenceVariables = Utils.intersection(variablesNames, evidenceList);
 
-        List<String> relevant_evidence = new ArrayList<>();
-        List<String> relevant_values = new ArrayList<>();
+        List<String> evidences = new ArrayList<>();
+        List<String> values = new ArrayList<>();
 
-        for (int i = 0; i < evidence.size(); i++) {
-            String name = evidence.get(i);
-            if (evidence_variable_in_factor.contains(name)) {
-                relevant_evidence.add(evidence.get(i));
-                relevant_values.add(values.get(i));
+        for (int i = 0; i < evidenceList.size(); i++) {
+            String name = evidenceList.get(i);
+            if (evidenceVariables.contains(name)) {
+                evidences.add(evidenceList.get(i));
+                values.add(valueList.get(i));
             }
         }
 
@@ -379,10 +351,10 @@ public class BNs {
 
         for (Map.Entry<String, Double> entry : factor.entrySet()) {
             boolean b = true;
-            for (int i = 0; i < relevant_evidence.size(); i++) {
-                StringBuilder evidence_value = new StringBuilder();
-                evidence_value.append(relevant_evidence.get(i)).append("=").append(relevant_values.get(i));
-                b &= entry.getKey().contains(evidence_value);
+            for (int i = 0; i < evidences.size(); i++) {
+                StringBuilder evidenceValue = new StringBuilder();
+                evidenceValue.append(evidences.get(i)).append("=").append(values.get(i));
+                b &= entry.getKey().contains(evidenceValue);
             }
             if (b) {
                 result.put(entry.getKey(), entry.getValue());
@@ -393,11 +365,11 @@ public class BNs {
     }
 
     /**
-     * this function get a factor (assuming with one variable) and return it normalized
-     * for example if the input factor is:
+     * Normalizing given factor
+     * e.g. in the case of the given factor is as follows:
      * B=T 0.00059224259
      * B=F 0.00149185665
-     * the output factor will be:
+     * the output factor should be:
      * B=T 0.284171971
      * B=F 0.715828028
      * By Calculating:
@@ -405,13 +377,13 @@ public class BNs {
      * 0.00059224259 * 479.8236 = 0.2841719716
      * 0.00149185665 * 479.8236 = 0.7158280285
      *
-     * @param factor input factor
+     * @param factor
      * @return normalized given factor
      */
     public LinkedHashMap<String, Double> normalize(LinkedHashMap<String, Double> factor, FactorCounter factorCounter) {
 
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
-        factor = UtilFunctions.fixingDuplicatesValuesInKeys(factor);
+        factor = Utils.removeDuplicateValuesInKeys(factor);
 
 //        System.out.println("=======================================================================================");
 //        System.out.println("Factor to Normalize:");
@@ -419,23 +391,22 @@ public class BNs {
 //        System.out.println("=======================================================================================");
 
         LinkedHashMap<String, List<String>> outcomes = CPTBuilder.getNamesAndOutcomes(factor);
-        String variable_name = "";
+        String variableName = "";
         for (Map.Entry<String, List<String>> entry : outcomes.entrySet()) {
-            variable_name = entry.getKey();
+            variableName = entry.getKey();
         }
-        List<String> variable_outcomes = outcomes.get(variable_name);
-        List<String> variable_outcomes_keys = new ArrayList<>();
-        for (String outcome : variable_outcomes) {
-            String value = variable_name + "=" + outcome;
-            variable_outcomes_keys.add(value);
+        List<String> variableOutcomes = outcomes.get(variableName);
+        List<String> variableOutcomesKeys = new ArrayList<>();
+        for (String outcome : variableOutcomes) {
+            String value = variableName + "=" + outcome;
+            variableOutcomesKeys.add(value);
         }
         List<Double> values = new ArrayList<>();
 
-        for (String outcome : variable_outcomes_keys) {
+        for (String outcome : variableOutcomesKeys) {
             values.add(factor.get(outcome));
         }
 
-        // number of values we added less one is the number of addition operations
         factorCounter.sumAdd(values.size() - 1);
 
         double exp = 0.0;
@@ -447,28 +418,20 @@ public class BNs {
             result.put(entry.getKey(), entry.getValue() * exp);
         }
         return result;
-
     }
 
     /**
-     * to string function
+     * Converting to string
      *
-     * @return string represents the network, print each CPT of the variables
+     * @return string represents the BNs, print each CPT of the variables
      */
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append("TO STRING NETWORK:\n");
+        result.append("TO STRING BNs:\n");
         for (Variable variable : this.variables) {
-            result.append(variable.getName()).append(":\n").append(UtilFunctions.hashMapToString(variable.getCPT()));
+            result.append(variable.getName()).append(":\n").append(Utils.hashMapToString(variable.getCPT()));
         }
         return result.toString();
-    }
-
-    public void print_childes_parents() {
-//        System.out.println("childes are:");
-//        System.out.println(UtilFunctions.hashMapToString(this.childes));
-//        System.out.println("parents are:");
-//        System.out.println(UtilFunctions.hashMapToString(this.parents));
     }
 }

@@ -138,7 +138,7 @@ public class XMLReader {
             Variable[] s2 = new Variable[s1.size()];
             for (int i = 0; i < s2.length; i++) s2[i] = s1.get(i);
 
-            value.initialize_parents(t2, s2);
+            value.initParents(t2, s2);
             variables.add(value);
         });
 
