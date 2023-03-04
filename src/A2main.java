@@ -90,6 +90,11 @@ public class A2main {
                 // Finish if inputVar has no parents.
                 double result = value.equals("T") ? probtable.get(0) : probtable.get(1);
                 printResult(result);
+
+                // execute query of p(variable=value|evidence) with an order
+//                List<Double> ve_result = net.variable_elimination(variable, value, new ArrayList<>(), new ArrayList<>());
+//                double result = ve_result.get(0);
+//                printResult(result);
             }
             break;
 
