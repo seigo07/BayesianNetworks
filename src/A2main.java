@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class A2main {
 
-    private static final String INVALID_ARGS_ERROR = "Usage: java A2main <Pn> <NID>"; // Usage Message.
+    private static final String INVALID_ARGS_ERROR = "Usage: java A2main <Pn> <NID>";
 
     public static void main(String[] args) {
 
@@ -27,15 +27,13 @@ public class A2main {
             System.exit(-1);
         }
 
-        Scanner sc = new Scanner(System.in);
-        // Reading the document of the xml file
+        // Constructing BN instance
         Document doc = XMLReader.readXML(filePath);
-        // Generating variables for BNs from a given document
         List<Variable> variables = new ArrayList<>(XMLReader.buildVariables(doc));
-        // Instantiating BNs
         BN net = new BN(variables);
         // Output text for output file
         StringBuilder output = new StringBuilder();
+        Scanner sc = new Scanner(System.in);
 
         switch (args[0]) {
             case "P1": {
@@ -44,8 +42,8 @@ public class A2main {
                 String variable = query[0];
                 String value = query[1];
 
-                List<Double> ve_result = net.variableElimination(variable, value, new ArrayList<>(), new ArrayList<>());
-                double result = ve_result.get(0);
+                List<Double> results = net.variableElimination(variable, value, new ArrayList<>(), new ArrayList<>());
+                double result = results.get(0);
                 printResult(result);
             }
             break;
