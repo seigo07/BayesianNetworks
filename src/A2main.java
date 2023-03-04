@@ -27,22 +27,13 @@ public class A2main {
             System.exit(-1);
         }
 
-        // Read and generate BN instance from given xml.
-        BN bn = FileManager.readBNFromFile(file);
-        for (BNVariable v : bn.getVariables()) {
-//            System.out.println("Name:" + v.getName() + "\n");
-//            System.out.println("ParentNames:" + v.getParentNames() + "\n");
-//            System.out.println("Outcomes:" + v.getOutcomes() + "\n");
-//            System.out.println("ProbTable:" + v.getProbTable() + "\n");
-        }
-
         Scanner sc = new Scanner(System.in);
         // Reading the document of the xml file
         Document doc = XMLReader.readXML(filePath);
         // Generating variables for BNs from a given document
         List<Variable> variables = new ArrayList<>(XMLReader.buildVariables(doc));
         // Instantiating BNs
-        BNs net = new BNs(variables);
+        BN net = new BN(variables);
         // Output text for output file
         StringBuilder output = new StringBuilder();
 
@@ -52,49 +43,10 @@ public class A2main {
                 String[] query = getQueriedNode(sc);
                 String variable = query[0];
                 String value = query[1];
-//                System.out.println("variable:" + variable);
-//                System.out.println("value:" + value);
 
-                BNVariable inputVar = bn.getVariable(variable);
-                // Finish if inputVar has no parents.
-                if (!inputVar.hasParents()) {
-                    double result = value.equals("T") ? inputVar.getProbTable().get(0) : inputVar.getProbTable().get(1);
-                    printResult(result);
-                    break;
-                }
-
-                ArrayList<Double> probtable = new ArrayList<>();
-
-                for (BNVariable v : bn.getVariables()) {
-                    // Skip top node
-                    if (!v.hasParents()) {
-                        for (Double p : v.getProbTable()) {
-                            probtable.add(p);
-                        }
-                        continue;
-                    }
-                    Double value1 = probtable.get(0) * v.getProbTable().get(0);
-                    Double value2 = probtable.get(0) * v.getProbTable().get(1);
-                    Double value3 = probtable.get(1) * v.getProbTable().get(2);
-                    Double value4 = probtable.get(1) * v.getProbTable().get(3);
-
-                    probtable.clear();
-
-                    probtable.add(0,value1 + value3);
-                    probtable.add(1,value2 + value4);
-
-                    if (v.getName().equals(inputVar.getName())) {
-                        break;
-                    }
-                }
-                // Finish if inputVar has no parents.
-                double result = value.equals("T") ? probtable.get(0) : probtable.get(1);
+                List<Double> ve_result = net.variableElimination(variable, value, new ArrayList<>(), new ArrayList<>());
+                double result = ve_result.get(0);
                 printResult(result);
-
-                // execute query of p(variable=value|evidence) with an order
-//                List<Double> ve_result = net.variable_elimination(variable, value, new ArrayList<>(), new ArrayList<>());
-//                double result = ve_result.get(0);
-//                printResult(result);
             }
             break;
 
