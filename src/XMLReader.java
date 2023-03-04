@@ -13,82 +13,73 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * this class contains static functions that can handle xml file reading and xml document reading for building bayesian network
+ * The class handles a given xml file for building BNs
  */
 public class XMLReader {
 
     /**
-     * this function return a xml document by a given xml file name
+     * Reading a xml document by a given xml
      *
-     * @param file_name xml file
-     * @return document
+     * @param filePath
+     * @return doc
      */
-    public static Document readXMLFile(String file_name) {
-        // xml file
-        File inputFile = new File(file_name);
+    public static Document readXML(String filePath) {
 
-        // create factory for reading xml
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        File xmlFile = new File(filePath);
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = null;
 
-        // create builder for reading xml
-        DocumentBuilder builder = null;
         try {
-            builder = factory.newDocumentBuilder();
+            docBuilder = docFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         }
 
-        // create document form xml file (parse with builder)
         Document doc = null;
         try {
-            if (builder == null) {
+            if (docBuilder == null) {
                 throw new IOException();
             }
-            doc = builder.parse(inputFile);
+            doc = docBuilder.parse(xmlFile);
         } catch (SAXException | IOException e) {
             e.printStackTrace();
         }
-
         return doc;
     }
 
     /**
-     * build a list of variables by a given xml document
+     * Building a variable list by a given xml document
      *
-     * @param doc given xml document
-     * @return list fo variables
+     * @param doc
+     * @return variables
      */
-    public static List<Variable> build_variables(Document doc) {
+    public static List<Variable> buildVariables(Document doc) {
 
-        // final names of each variable
+        // Final names of each variable
         List<String> names = new ArrayList<>();
 
-        // final outcomes of each variable
+        // Final outcomes of each variable
         List<List<String>> outcomes = new ArrayList<>();
 
-        // final parents of each variable
+        // Final parents of each variable
         HashMap<String, List<Variable>> parents = new HashMap<>();
 
-        // final values of each variable
+        // Final values of each variable
         HashMap<String, List<Double>> values = new HashMap<>();
 
-        // reading all the variables
+        // Final variables
         NodeList variableList = doc.getDocumentElement().getElementsByTagName("VARIABLE");
 
         for (int i = 0; i < variableList.getLength(); i++) {
-            Node variableNode = variableList.item(i);
-            String name = "";
+
+            Node node = variableList.item(i);
             List<String> outcome = new ArrayList<>();
-            if (variableNode.getNodeType() == Node.ELEMENT_NODE) {
-                NodeList inner = variableNode.getChildNodes();
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                NodeList inner = node.getChildNodes();
                 for (int j = 0; j < inner.getLength(); j++) {
                     Node innerNode = inner.item(j);
-
-                    // getting name
                     if (innerNode.getNodeName().equals("NAME")) {
-                        name = innerNode.getTextContent();
-
-                        // getting outcomes
+                        names.add(innerNode.getTextContent());
                     } else if (innerNode.getNodeName().equals("OUTCOME")) {
                         NodeList node_outcomes = innerNode.getChildNodes();
                         for (int k = 0; k < node_outcomes.getLength(); k++) {
@@ -97,54 +88,47 @@ public class XMLReader {
                     }
                 }
             }
-            names.add(name);
             outcomes.add(outcome);
         }
 
-        // hashmap of our current variables indexes by name
-        HashMap<String, Variable> variableHashMap = new HashMap<>();
+        // Current variables indexed by name
+        HashMap<String, Variable> variablesHashMap = new HashMap<>();
         for (int i = 0; i < variableList.getLength(); i++) {
-            variableHashMap.put(names.get(i), new Variable(names.get(i), outcomes.get(i)));
+            variablesHashMap.put(names.get(i), new Variable(names.get(i), outcomes.get(i)));
         }
 
-        // reading all the variables
-        NodeList definitionList = doc.getDocumentElement().getElementsByTagName("DEFINITION");
+        // Reading variables
+        NodeList nodeList = doc.getDocumentElement().getElementsByTagName("DEFINITION");
 
-        for (int i = 0; i < definitionList.getLength(); i++) {
-            Node definitionNode = definitionList.item(i);
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node definitionNode = nodeList.item(i);
             String name = "";
-            List<Variable> variable_parents = new ArrayList<>();
+            List<Variable> variableParents = new ArrayList<>();
             String table = "";
             if (definitionNode.getNodeType() == Node.ELEMENT_NODE) {
                 NodeList inner = definitionNode.getChildNodes();
                 for (int j = 0; j < inner.getLength(); j++) {
                     Node innerNode = inner.item(j);
-
-                    // getting name
                     if (innerNode.getNodeName().equals("FOR")) {
                         name = innerNode.getTextContent();
-
-                        // getting parents
                     } else if (innerNode.getNodeName().equals("GIVEN")) {
-                        NodeList node_parents = innerNode.getChildNodes();
-                        for (int k = 0; k < node_parents.getLength(); k++) {
-                            variable_parents.add(variableHashMap.get(node_parents.item(k).getTextContent()));
+                        NodeList nodeParents = innerNode.getChildNodes();
+                        for (int k = 0; k < nodeParents.getLength(); k++) {
+                            variableParents.add(variablesHashMap.get(nodeParents.item(k).getTextContent()));
                         }
-
-                        // getting table numbers
                     } else if (innerNode.getNodeName().equals("TABLE")) {
                         table = innerNode.getTextContent();
                     }
                 }
             }
-            parents.put(name, variable_parents);
-            values.put(name, split_table_line(table));
+            parents.put(name, variableParents);
+            values.put(name, splitTableLine(table));
         }
 
         List<Variable> variables = new ArrayList<>();
 
-        // for each variable initialize parents
-        variableHashMap.forEach((key, value) -> {
+        // Initializing parents
+        variablesHashMap.forEach((key, value) -> {
             List<Double> t1 = values.get(key);
             List<Variable> s1 = parents.get(key);
 
@@ -158,7 +142,6 @@ public class XMLReader {
             variables.add(value);
         });
 
-        // return variables for the bayesian network
         return variables;
     }
 
@@ -170,7 +153,7 @@ public class XMLReader {
      * @param line string of double values
      * @return list of doubles
      */
-    private static List<Double> split_table_line(String line) {
+    private static List<Double> splitTableLine(String line) {
         String[] split_line = line.split(" ");
         List<Double> result = new ArrayList<>();
         for (String value : split_line) {

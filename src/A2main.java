@@ -37,13 +37,13 @@ public class A2main {
         }
 
         Scanner sc = new Scanner(System.in);
-        // getting the document of the xml file
-        Document doc = XMLReader.readXMLFile(filePath);
-        // build the variables for the bayesian network from given document
-        List<Variable> variables = new ArrayList<>(XMLReader.build_variables(doc));
-        // building the bayesian network
+        // Reading the document of the xml file
+        Document doc = XMLReader.readXML(filePath);
+        // Generating variables for BNs from a given document
+        List<Variable> variables = new ArrayList<>(XMLReader.buildVariables(doc));
+        // Instantiating BNs
         Network net = new Network(variables);
-        // output text for output file
+        // Output text for output file
         StringBuilder output = new StringBuilder();
 
         switch (args[0]) {
