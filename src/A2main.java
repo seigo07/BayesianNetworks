@@ -42,7 +42,7 @@ public class A2main {
         // Generating variables for BNs from a given document
         List<Variable> variables = new ArrayList<>(XMLReader.buildVariables(doc));
         // Instantiating BNs
-        Network net = new Network(variables);
+        BNs net = new BNs(variables);
         // Output text for output file
         StringBuilder output = new StringBuilder();
 
@@ -104,19 +104,19 @@ public class A2main {
                 String variable = query[0];
                 String value = query[1];
                 String[] inputOrder = getOrder(sc);
-                List<String> order = new ArrayList<String>(Arrays.asList(inputOrder));
+                List<String> order = new ArrayList<>(Arrays.asList(inputOrder));
 
                 // execute query of p(variable=value|evidence) with an order
-                List<Double> ve_result = net.variable_elimination(variable, value, new ArrayList<>(), order);
-                double result = ve_result.get(0);
+                List<Double> results = net.variableElimination(variable, value, new ArrayList<>(), order);
+                double result = results.get(0);
                 printResult(result);
 
                 // need to save output to output txt file...
-                output.append(UtilFunctions.roundFiveDecimalPlaces(ve_result.get(0)));
-                output.append(",");
-                output.append((long)Math.floor(ve_result.get(1)));
-                output.append(",");
-                output.append((long)Math.floor(ve_result.get(2)));
+//                output.append(UtilFunctions.roundFiveDecimalPlaces(results.get(0)));
+//                output.append(",");
+//                output.append((long)Math.floor(results.get(1)));
+//                output.append(",");
+//                output.append((long)Math.floor(results.get(2)));
 //                System.out.println("output:\n" + output);
             }
             break;
@@ -128,16 +128,16 @@ public class A2main {
                 String value = query[1];
                 ArrayList<String[]> evidence = getEvidence(sc);
                 // execute query of p(variable=value|evidence) with an order
-                List<Double> ve_result = net.variable_elimination(variable, value, evidence, new ArrayList<>());
-                double result = ve_result.get(0);
+                List<Double> results = net.variableElimination(variable, value, evidence, new ArrayList<>());
+                double result = results.get(0);
                 printResult(result);
 
                 // need to save output to output txt file...
-                output.append(UtilFunctions.roundFiveDecimalPlaces(ve_result.get(0)));
-                output.append(",");
-                output.append((long)Math.floor(ve_result.get(1)));
-                output.append(",");
-                output.append((long)Math.floor(ve_result.get(2)));
+//                output.append(UtilFunctions.roundFiveDecimalPlaces(results.get(0)));
+//                output.append(",");
+//                output.append((long)Math.floor(results.get(1)));
+//                output.append(",");
+//                output.append((long)Math.floor(results.get(2)));
 //                System.out.println("output:\n" + output);
             }
             break;

@@ -146,17 +146,16 @@ public class XMLReader {
     }
 
     /**
-     * this function gets a string of double values from the TABLE tag in the DEFINITION tag in the xml file
-     * and return this values in a list of doubles.
-     * for example given "0.95 0.05 0.6 0.4" string this function will return List<Double>{0.95, 0.05, 0.6, 0.4}
+     * Converting a string of doubles into a list of doubles.
+     * e.g. Converting "0.7 0.3" into List<Double>{0.7, 0.3}
      *
-     * @param line string of double values
-     * @return list of doubles
+     * @param line a string of doubles
+     * @return List<Double>
      */
     private static List<Double> splitTableLine(String line) {
-        String[] split_line = line.split(" ");
+        String[] splitLine = line.split(" ");
         List<Double> result = new ArrayList<>();
-        for (String value : split_line) {
+        for (String value : splitLine) {
             result.add(Double.parseDouble(value));
         }
         return result;
