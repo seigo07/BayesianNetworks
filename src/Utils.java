@@ -99,11 +99,11 @@ public class Utils {
 
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
 
-        if (factor.size() == 1 && CPTBuilder.getNames(factor).size() == 1) {
+        if (factor.size() == 1 && CPT.getNames(factor).size() == 1) {
             return factor;
         }
 
-        LinkedHashMap<String, List<String>> outcomes = CPTBuilder.getNamesAndOutcomes(factor);
+        LinkedHashMap<String, List<String>> outcomes = CPT.getNamesAndOutcomes(factor);
 
         if (outcomes.size() == 0) {
             return result;

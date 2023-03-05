@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * The class handles a given xml file for building BNs
  */
-public class XMLReader {
+public class FileManager {
 
     /**
      * Reading a xml document by a given xml

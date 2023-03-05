@@ -56,7 +56,7 @@ public class Variable {
             }
             outcomes.add(this.outcomes);
             names.add(this.name);
-            this.cpt = CPTBuilder.buildCPT(values, outcomes, names);
+            this.cpt = CPT.buildCPT(values, outcomes, names);
 
         }
         this.uninitialized = true;

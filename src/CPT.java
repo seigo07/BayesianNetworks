@@ -4,7 +4,7 @@ import java.util.*;
 /**
  * The class for building a CPT for BNs
  */
-public class CPTBuilder {
+public class CPT {
 
     /**
      * Building a CPT by given the names, outcomes, and values of the variable
@@ -17,11 +17,11 @@ public class CPTBuilder {
     public static LinkedHashMap<String, Double> buildCPT(double[] values, List<List<String>> outcomes, List<String> names) {
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
 
-        System.out.println("values: " + Arrays.toString(values));
+//        System.out.println("values: " + Arrays.toString(values));
         for (List<String> o : outcomes) {
-            System.out.println("outcome: " + o);
+//            System.out.println("outcome: " + o);
         }
-        System.out.println("names: " + names);
+//        System.out.println("names: " + names);
 
 
         String[] outputs = new String[values.length];
@@ -111,12 +111,12 @@ public class CPTBuilder {
      */
     public static LinkedHashMap<String, Double> integrateTwoFactors(LinkedHashMap<String, Double> X, LinkedHashMap<String, Double> Y, FactorCounter factorCounter) {
 
-        System.out.println("//////////////// JOIN //////////////////////");
-        System.out.println("X:");
-        System.out.println(Utils.hashMapToString(X));
-        System.out.println("Y:");
-        System.out.println(Utils.hashMapToString(Y));
-        System.out.println("////////////////////////////////////////////");
+//        System.out.println("//////////////// JOIN //////////////////////");
+//        System.out.println("X:");
+//        System.out.println(Utils.hashMapToString(X));
+//        System.out.println("Y:");
+//        System.out.println(Utils.hashMapToString(Y));
+//        System.out.println("////////////////////////////////////////////");
 
         HashMap<String, List<String>> xOutcomes = getNamesAndOutcomes(X);
         HashMap<String, List<String>> yOutcomes = getNamesAndOutcomes(Y);
@@ -128,7 +128,7 @@ public class CPTBuilder {
 
         // Getting the names of the variables that the factor will include
         List<String> xyNamesIntersection = Utils.intersection(xNames, yNames);
-        System.out.println("intersection: " + xyNamesIntersection);
+//        System.out.println("intersection: " + xyNamesIntersection);
 
         // Integrating a factor into result
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
@@ -171,9 +171,9 @@ public class CPTBuilder {
             }
         }
 
-        System.out.println("\nRESULT AFTER JOIN:");
-        System.out.println(Utils.hashMapToString(result));
-        System.out.println();
+//        System.out.println("\nRESULT AFTER JOIN:");
+//        System.out.println(Utils.hashMapToString(result));
+//        System.out.println();
 
         factorCounter.mulAdd(result.size());
 
@@ -351,5 +351,46 @@ public class CPTBuilder {
             }
             return xNamesAscii >= yNamesAscii;
         }
+    }
+
+    /**
+     * Deleting the unrequited values by evidence and return the new factor
+     *
+     * @param evidenceList list of the evidence variable
+     * @param valueList    list of the values of the evidence variables
+     * @param factor       the factor we eliminate the evidence values
+     * @return result
+     */
+    public static LinkedHashMap<String, Double> updateCPT(List<String> evidenceList, List<String> valueList, LinkedHashMap<String, Double> factor) {
+
+        List<String> variablesNames = CPT.getNames(factor);
+        List<String> evidenceVariables = Utils.intersection(variablesNames, evidenceList);
+
+        List<String> evidences = new ArrayList<>();
+        List<String> values = new ArrayList<>();
+
+        for (int i = 0; i < evidenceList.size(); i++) {
+            String name = evidenceList.get(i);
+            if (evidenceVariables.contains(name)) {
+                evidences.add(evidenceList.get(i));
+                values.add(valueList.get(i));
+            }
+        }
+
+        LinkedHashMap<String, Double> result = new LinkedHashMap<>();
+
+        for (Map.Entry<String, Double> entry : factor.entrySet()) {
+            boolean b = true;
+            for (int i = 0; i < evidences.size(); i++) {
+                StringBuilder evidenceValue = new StringBuilder();
+                evidenceValue.append(evidences.get(i)).append("=").append(values.get(i));
+                b &= entry.getKey().contains(evidenceValue);
+            }
+            if (b) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return result;
     }
 }
