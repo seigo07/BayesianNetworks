@@ -127,12 +127,12 @@ public class BN {
 
         while (!queue.isEmpty()) {
             Variable v = queue.poll();
-//            System.out.println("poll: " + v + ", neighbors: " + getNeighbors(v));
+            System.out.println("poll: " + v + ", neighbors: " + getNeighbors(v));
             for (Variable u : getNeighbors(v)) {
-//                System.out.println("V: " + v + ", U: " + u);
+                System.out.println("V: " + v + ", U: " + u);
                 // found destination
                 if (u.equals(destinationVariable)) {
-//                    System.out.println("found " + destination_node);
+                    System.out.println("found " + destinationVariable);
                     return false;
                 }
 
@@ -140,13 +140,13 @@ public class BN {
                 if (this.parents.get(v.getName()).contains(u)) {
                     queue.add(u);
                     u.setFromChild(true);
-//                    System.out.println(u + " is parent of " + v);
+                    System.out.println(u + " is parent of " + v);
                 // u is child of v
                 } else if (visited.get(u) == Visited.NO) {
                     queue.add(u);
                     visited.put(u, Visited.YES);
                     u.setFromChild(false);
-//                    System.out.println(u + " is child of " + v);
+                    System.out.println(u + " is child of " + v);
 
                     // found evidence variable
                     if (u.isShaded()) {
@@ -154,7 +154,7 @@ public class BN {
                         if (v.isShaded()) {
                             u.setFromChild(false);
                         }
-//                        System.out.println(u + " is evidence");
+                        System.out.println(u + " is evidence");
                     }
                 }
             }
@@ -195,7 +195,7 @@ public class BN {
             }
         }
 
-//        System.out.println("queryVariable: " + queryVariable + ", queryValue: " + queryValue + ", evidenceVariables: " + evidenceVariables + ", evidenceValues: " + evidenceValues);
+        System.out.println("queryVariable: " + queryVariable + ", queryValue: " + queryValue + ", evidenceVariables: " + evidenceVariables + ", evidenceValues: " + evidenceValues);
 
         // This counter counts the number of addition and multiplication operations in Variable Elimination
         FactorCounter factorCounter = new FactorCounter();
@@ -223,29 +223,29 @@ public class BN {
                         result.add(line.getValue());
                         result.add(0.0);
                         result.add(0.0);
-//                        System.out.println("FINAL VALUE IS " + line.getValue());
+                        System.out.println("FINAL VALUE IS " + line.getValue());
                         return result;
                     }
                 }
             }
         }
 
-//        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-//        System.out.println("FACTORS ADDED:");
+        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        System.out.println("FACTORS ADDED:");
         for (Map.Entry<String, LinkedHashMap<String, Double>> f : factors.entrySet()) {
-//            System.out.println(f.getKey() + ":");
-//            System.out.println(UtilFunctions.hashMapToString(f.getValue()));
+            System.out.println(f.getKey() + ":");
+            System.out.println(Utils.hashMapToString(f.getValue()));
         }
-//        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
-//        System.out.println();
-//        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-//        System.out.println("PRINT CURRENT FACTORS:");
+        System.out.println();
+        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        System.out.println("PRINT CURRENT FACTORS:");
         for (Map.Entry<String, LinkedHashMap<String, Double>> f : factors.entrySet()) {
-//            System.out.println("NAME: " + f.getKey());
-//            System.out.println(UtilFunctions.hashMapToString(f.getValue()));
+            System.out.println("NAME: " + f.getKey());
+            System.out.println(Utils.hashMapToString(f.getValue()));
         }
-//        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
         // removing the factors with size of one or less
         LinkedHashMap<String, Integer> sizes = new LinkedHashMap<>();
@@ -260,12 +260,12 @@ public class BN {
         }
 
         // eliminate again if still the factor contains other different outcomes of
-//        System.out.println("-------------------------------BEFORE END PRINT FACTORS----------------------------------");
+        System.out.println("-------------------------------BEFORE END PRINT FACTORS----------------------------------");
         for (Map.Entry<String, LinkedHashMap<String, Double>> e : factors.entrySet()) {
-//            System.out.println("factor for " + e.getKey() + ", is:");
-//            System.out.println(UtilFunctions.hashMapToString(e.getValue()));
+            System.out.println("factor for " + e.getKey() + ", is:");
+            System.out.println(Utils.hashMapToString(e.getValue()));
         }
-//        System.out.println("-----------------------------------------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------------------------------------");
 
         LinkedHashMap<String, Double> lastFactor = new LinkedHashMap<>();
 
@@ -280,8 +280,8 @@ public class BN {
         } else {
             for (Map.Entry<String, LinkedHashMap<String, Double>> factor : factors.entrySet()) {
                 lastFactor = new LinkedHashMap<>(factor.getValue());
-//                System.out.println("LAST FACTOR:");
-//                System.out.println(UtilFunctions.hashMapToString(last_factor));
+                System.out.println("LAST FACTOR:");
+                System.out.println(Utils.hashMapToString(lastFactor));
                 break;
             }
         }
@@ -292,15 +292,17 @@ public class BN {
         if (variableNames.size() > 1) {
             variableNames.remove(queryVariable.getName());
             for (String name : variableNames) {
+                System.out.println("name: " + name);
                 lastFactor = CPTBuilder.eliminate(lastFactor, getVariableByName(name), factorCounter);
+                System.out.println("lastFactor: " + lastFactor);
             }
         }
 
         // Normalizing the lastFactor
         lastFactor = normalize(lastFactor, factorCounter);
-//        System.out.println("lastFactor: (after normalize)");
-//        System.out.println("factorCounter: " + factorCounter);
-//        System.out.println(UtilFunctions.hashMapToString(lastFactor));
+        System.out.println("lastFactor: (after normalize)");
+        System.out.println("factorCounter: " + factorCounter);
+        System.out.println(Utils.hashMapToString(lastFactor));
 
         double probability = 0.0;
         for (Map.Entry<String, Double> factor : lastFactor.entrySet()) {
@@ -310,7 +312,7 @@ public class BN {
             }
         }
 
-//        System.out.println("FINAL VALUE IS " + value);
+        System.out.println("FINAL VALUE IS " + val);
 
         List<Double> result = new ArrayList<>();
         // The probability for given variable
@@ -385,10 +387,10 @@ public class BN {
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
         factor = Utils.removeDuplicateValuesInKeys(factor);
 
-//        System.out.println("=======================================================================================");
-//        System.out.println("Factor to Normalize:");
-//        System.out.println(UtilFunctions.hashMapToString(factor));
-//        System.out.println("=======================================================================================");
+        System.out.println("=======================================================================================");
+        System.out.println("Factor to Normalize:");
+        System.out.println(Utils.hashMapToString(factor));
+        System.out.println("=======================================================================================");
 
         LinkedHashMap<String, List<String>> outcomes = CPTBuilder.getNamesAndOutcomes(factor);
         String variableName = "";
