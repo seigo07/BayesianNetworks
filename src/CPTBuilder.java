@@ -301,26 +301,25 @@ public class CPTBuilder {
      */
     public static List<LinkedHashMap<String, Double>> sortFactors(List<LinkedHashMap<String, Double>> factors) {
 
-        LinkedHashMap<String, Double>[] sortedFactors = new LinkedHashMap[factors.size()];
+        ArrayList<LinkedHashMap<String, Double>> sortedFactors = new ArrayList<>();
         for (int i = 0; i < factors.size(); i++) {
-            sortedFactors[i] = factors.get(i);
+            sortedFactors.add(i,factors.get(i));
         }
 
         // Sorting by bubble sort algorithm
-        for (int i = 0; i < sortedFactors.length; i++) {
-            for (int j = 0; j < sortedFactors.length - 1; j++) {
-                if (CPTCompare(sortedFactors[j], sortedFactors[j + 1])) {
-
+        for (int i = 0; i < sortedFactors.size(); i++) {
+            for (int j = 0; j < sortedFactors.size() - 1; j++) {
+                if (CPTCompare(sortedFactors.get(j), sortedFactors.get(j + 1))) {
                     // swap factors
-                    LinkedHashMap<String, Double> temp = sortedFactors[j];
-                    sortedFactors[j] = sortedFactors[j + 1];
-                    sortedFactors[j + 1] = temp;
+                    LinkedHashMap<String, Double> temp = sortedFactors.get(j);
+                    sortedFactors.set(j,sortedFactors.get(j+1));
+                    sortedFactors.set(j + 1,temp);
 
                 }
             }
         }
 
-        return new ArrayList<>(Arrays.asList(sortedFactors));
+        return sortedFactors;
     }
 
     /**
