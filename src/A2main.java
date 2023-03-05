@@ -30,7 +30,7 @@ public class A2main {
         // Constructing BN instance
         Document doc = FileManager.readXML(filePath);
         List<Variable> variables = new ArrayList<>(FileManager.buildVariables(doc));
-        BN net = new BN(variables);
+        BN bn = new BN(variables);
         // Output text for output file
         StringBuilder output = new StringBuilder();
         Scanner sc = new Scanner(System.in);
@@ -42,7 +42,7 @@ public class A2main {
                 String variable = query[0];
                 String value = query[1];
 
-                List<Double> results = net.VE(variable, value, new ArrayList<>(), new ArrayList<>());
+                List<Double> results = Algorithm.VE(variable, value, new ArrayList<>(), new ArrayList<>(), bn);
                 double result = results.get(0);
                 printResult(result);
             }
@@ -57,7 +57,7 @@ public class A2main {
                 List<String> order = new ArrayList<>(Arrays.asList(inputOrder));
 
                 // execute query of p(variable=value|evidence) with an order
-                List<Double> results = net.VE(variable, value, new ArrayList<>(), order);
+                List<Double> results = Algorithm.VE(variable, value, new ArrayList<>(), order, bn);
                 double result = results.get(0);
                 printResult(result);
 
@@ -78,7 +78,7 @@ public class A2main {
                 String value = query[1];
                 ArrayList<String[]> evidence = getEvidence(sc);
                 // execute query of p(variable=value|evidence) with an order
-                List<Double> results = net.VE(variable, value, evidence, new ArrayList<>());
+                List<Double> results = Algorithm.VE(variable, value, evidence, new ArrayList<>(), bn);
                 double result = results.get(0);
                 printResult(result);
 
