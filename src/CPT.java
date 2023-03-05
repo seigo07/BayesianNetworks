@@ -14,7 +14,7 @@ public class CPT {
      * @param names    - names for each variable
      * @return - .
      */
-    public static LinkedHashMap<String, Double> buildCPT(double[] values, List<List<String>> outcomes, List<String> names) {
+    public static LinkedHashMap<String, Double> constructCPT(double[] values, List<List<String>> outcomes, List<String> names) {
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
 
 //        System.out.println("values: " + Arrays.toString(values));
@@ -73,17 +73,17 @@ public class CPT {
      * @param cptList the list of the factors to join
      * @return joined factor
      */
-    public static LinkedHashMap<String, Double> integrateFactors(List<LinkedHashMap<String, Double>> cptList, FactorCounter factorCounter) {
+    public static LinkedHashMap<String, Double> integrateFactors(List<LinkedHashMap<String, Double>> cptList, Counter counter) {
 
         LinkedHashMap<String, Double> factor = cptList.get(0);
         List<LinkedHashMap<String, Double>> newCptList = new ArrayList<>();
         for (int i = 1; i < cptList.size(); i++) {
             newCptList.add(cptList.get(i));
         }
-        return integrateFactors(newCptList, factor, factorCounter);
+        return integrateFactors(newCptList, factor, counter);
     }
 
-    private static LinkedHashMap<String, Double> integrateFactors(List<LinkedHashMap<String, Double>> cptList, LinkedHashMap<String, Double> factor, FactorCounter factorCounter) {
+    private static LinkedHashMap<String, Double> integrateFactors(List<LinkedHashMap<String, Double>> cptList, LinkedHashMap<String, Double> factor, Counter counter) {
 
         if (cptList.isEmpty()) return factor;
 
@@ -91,7 +91,7 @@ public class CPT {
         cptList = sortFactors(cptList);
 
         factor = cptList.get(0);
-        factor = integrateTwoFactors(factor, cptList.get(1), factorCounter);
+        factor = integrateTwoFactors(factor, cptList.get(1), counter);
         factor = Utils.removeDuplicateValuesInKeys(factor);
 
         List<LinkedHashMap<String, Double>> newCptList = new ArrayList<>();
@@ -99,7 +99,7 @@ public class CPT {
             newCptList.add(cptList.get(i));
         }
 
-        return integrateFactors(newCptList, factor, factorCounter);
+        return integrateFactors(newCptList, factor, counter);
     }
 
     /**
@@ -109,7 +109,7 @@ public class CPT {
      * @param Y the second factor
      * @return new factor of X and Y combined
      */
-    public static LinkedHashMap<String, Double> integrateTwoFactors(LinkedHashMap<String, Double> X, LinkedHashMap<String, Double> Y, FactorCounter factorCounter) {
+    public static LinkedHashMap<String, Double> integrateTwoFactors(LinkedHashMap<String, Double> X, LinkedHashMap<String, Double> Y, Counter counter) {
 
 //        System.out.println("//////////////// JOIN //////////////////////");
 //        System.out.println("X:");
@@ -175,7 +175,7 @@ public class CPT {
 //        System.out.println(Utils.hashMapToString(result));
 //        System.out.println();
 
-        factorCounter.mulAdd(result.size());
+        counter.multiAdd(result.size());
 
         return result;
     }
@@ -236,7 +236,7 @@ public class CPT {
      * @param variables the variable
      * @return the new factor eliminated from the variables
      */
-    public static LinkedHashMap<String, Double> eliminate(LinkedHashMap<String, Double> factor, Variable variables, FactorCounter factorCounter) {
+    public static LinkedHashMap<String, Double> eliminate(LinkedHashMap<String, Double> factor, Variable variables, Counter counter) {
 
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
 
@@ -281,7 +281,7 @@ public class CPT {
                             double r = u + v;
 
                             if (!result.containsKey(new_key)) {
-                                factorCounter.sumAdd(1);
+                                counter.sumAdd(1);
                                 result.put(new_key, r);
                             }
                         }
@@ -309,7 +309,7 @@ public class CPT {
         // Sorting by bubble sort algorithm
         for (int i = 0; i < sortedFactors.size(); i++) {
             for (int j = 0; j < sortedFactors.size() - 1; j++) {
-                if (CPTCompare(sortedFactors.get(j), sortedFactors.get(j + 1))) {
+                if (compareCPT(sortedFactors.get(j), sortedFactors.get(j + 1))) {
                     // swap factors
                     LinkedHashMap<String, Double> temp = sortedFactors.get(j);
                     sortedFactors.set(j,sortedFactors.get(j+1));
@@ -327,7 +327,7 @@ public class CPT {
      * @param Y second factor
      * @return true or false if we want to swap between X and Y
      */
-    private static boolean CPTCompare(LinkedHashMap<String, Double> X, LinkedHashMap<String, Double> Y) {
+    private static boolean compareCPT(LinkedHashMap<String, Double> X, LinkedHashMap<String, Double> Y) {
         if (X.size() < Y.size()) {
             return false;
         } else if (X.size() > Y.size()) {

@@ -56,7 +56,7 @@ public class Variable {
             }
             outcomes.add(this.outcomes);
             names.add(this.name);
-            this.cpt = CPT.buildCPT(values, outcomes, names);
+            this.cpt = CPT.constructCPT(values, outcomes, names);
 
         }
         this.uninitialized = true;
@@ -68,13 +68,6 @@ public class Variable {
      */
     public List<Variable> getParents() {
         return this.parents;
-    }
-
-    /**
-     * @return - whether variables have parents or not
-     */
-    public boolean hasParents() {
-        return this.parents.size() > 0;
     }
 
     /**

@@ -34,7 +34,7 @@ public class Algorithm {
 //        System.out.println("queryVariable: " + queryVariable + ", queryValue: " + queryValue + ", evidenceVariables: " + evidenceVariables + ", evidenceValues: " + evidenceValues);
 
         // This counter counts the number of addition and multiplication operations in Variable Elimination
-        FactorCounter factorCounter = new FactorCounter();
+        Counter counter = new Counter();
 
         // The hashmap of factors for each variable
         LinkedHashMap<String, LinkedHashMap<String, Double>> factors = new LinkedHashMap<>();
@@ -111,7 +111,7 @@ public class Algorithm {
             for (Map.Entry<String, LinkedHashMap<String, Double>> factor : factors.entrySet()) {
                 factorsLeft.add(factor.getValue());
             }
-            lastFactor = CPT.integrateFactors(factorsLeft, factorCounter);
+            lastFactor = CPT.integrateFactors(factorsLeft, counter);
             // Getting the one left factor
         } else {
             for (Map.Entry<String, LinkedHashMap<String, Double>> factor : factors.entrySet()) {
@@ -130,15 +130,15 @@ public class Algorithm {
 //            System.out.println("initial lastFactor: " + lastFactor);
             for (String name : variableNames) {
 //                System.out.println("name: " + name);
-                lastFactor = CPT.eliminate(lastFactor, bn.getVariableByName(name), factorCounter);
+                lastFactor = CPT.eliminate(lastFactor, bn.getVariableByName(name), counter);
 //                System.out.println("lastFactor: " + lastFactor);
             }
         }
 
         // Normalizing the lastFactor
-        lastFactor = normalize(lastFactor, factorCounter);
+        lastFactor = normalize(lastFactor, counter);
 //        System.out.println("lastFactor: (after normalize)");
-//        System.out.println("factorCounter: " + factorCounter);
+//        System.out.println("counter: " + counter);
 //        System.out.println(Utils.hashMapToString(lastFactor));
 
         double probability = 0.0;
@@ -155,9 +155,9 @@ public class Algorithm {
         // The probability for given variable
         result.add(probability);
         // The number of additions
-        result.add((double) factorCounter.getSumCount());
+        result.add((double) counter.getSumCount());
         // The number of multiples
-        result.add((double) factorCounter.getMulCount());
+        result.add((double) counter.getMultiCount());
 
         return result;
     }
@@ -168,7 +168,7 @@ public class Algorithm {
      * @param factor
      * @return normalized given factor
      */
-    public static LinkedHashMap<String, Double> normalize(LinkedHashMap<String, Double> factor, FactorCounter factorCounter) {
+    public static LinkedHashMap<String, Double> normalize(LinkedHashMap<String, Double> factor, Counter counter) {
 
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
         factor = Utils.removeDuplicateValuesInKeys(factor);
@@ -195,7 +195,7 @@ public class Algorithm {
             values.add(factor.get(outcome));
         }
 
-        factorCounter.sumAdd(values.size() - 1);
+        counter.sumAdd(values.size() - 1);
 
         double exp = 0.0;
         for (Double value : values) {
