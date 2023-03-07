@@ -1,12 +1,15 @@
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.*;
 
-public class UtilFunctions {
+/**
+ * The helper class
+ */
+
+public class Utils {
+
     /**
-     * this generic function returns a string of a given hashMap (for printing)
+     * Returning a string of a given hashMap (for printing)
      *
-     * @param hashmap - given hashmap
+     * @param hashmap
      * @return hashmap to string
      */
     public static <K, V> String hashMapToString(LinkedHashMap<K, V> hashmap) {
@@ -22,15 +25,18 @@ public class UtilFunctions {
     }
 
     /**
-     * @param keys is a key string from a CPT table, for example: "A=T,B=F,C=v1"
-     * @return hashmap when the keys are the variables name ("A", "B", "C") and the values of them are the outcomes ("T", "F", "v1")
+     * Splitting keys into variables and outcomes
+     * e.g. "A=T,B=F" to variables ("A", "B", "C") and the outcomes ("T", "F")
+     *
+     * @param keys
+     * @return hashmap for variables and outcomes
      */
-    public static LinkedHashMap<String, String> splitKeysToVariablesAndOutcomes(String keys) {
+    public static LinkedHashMap<String, String> splitKeys(String keys) {
         LinkedHashMap<String, String> result = new LinkedHashMap<>();
-        String[] keys_split = keys.split(",");
-        for (String key : keys_split) {
-            String[] key_split = key.split("=");
-            result.put(key_split[0], key_split[1]);
+        String[] splitKeys = keys.split(",");
+        for (String key : splitKeys) {
+            String[] splitKey = key.split("=");
+            result.put(splitKey[0], splitKey[1]);
         }
         return result;
     }
@@ -39,7 +45,7 @@ public class UtilFunctions {
      * @param X   list of elements
      * @param Y   list of elements
      * @param <T> some value that X and Y are fill with
-     * @return union of X and Y lists
+     * @return union of X and Y
      */
     public static <T> List<T> union(List<T> X, List<T> Y) {
         Set<T> result = new HashSet<>();
@@ -52,7 +58,7 @@ public class UtilFunctions {
      * @param X   list of elements
      * @param Y   list of elements
      * @param <T> some value that X and Y are fill with
-     * @return intersection of X and Y lists
+     * @return intersection of X and Y
      */
     public static <T> List<T> intersection(List<T> X, List<T> Y) {
         List<T> result = new ArrayList<>();
@@ -64,53 +70,41 @@ public class UtilFunctions {
     }
 
     /**
-     * @param list of strings
-     * @return string of the list strings seperated by commas
+     * @param strings
+     * @return list of strings seperated by commas
      */
-    public static String combineWithCommas(List<String> list) {
+    public static String combineWithCommas(List<String> strings) {
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < list.size(); i++) {
-            result.append(list.get(i));
-            if (i != list.size() - 1) result.append(",");
+        for (int i = 0; i < strings.size(); i++) {
+            result.append(strings.get(i));
+            if (i != strings.size() - 1) result.append(",");
         }
         return result.toString();
     }
 
     /**
-     * @param string given string
-     * @return list of the string split by commas (",")
+     * @param string
+     * @return list of strings split by commas
      */
     public static List<String> separateByCommas(String string) {
         return new ArrayList<>(Arrays.asList(string.split(",")));
     }
 
     /**
-     * this function get a factor and return a new factor with without duplicates values
-     * for example if our input factor will be:
-     * K=T,A=T,MANGO=TASTY,B=T,C=T,G=F : 0.1
-     * K=T,A=T,MANGO=TASTY,B=F,C=T,G=F : 0.2
-     * K=T,A=F,MANGO=TASTY,B=T,C=T,G=F : 0.3
-     * K=T,A=F,MANGO=TASTY,B=F,C=T,G=F : 0.4
-     * the output factor will be:
-     * A=T,B=T, : 0.1
-     * A=T,B=F, : 0.2
-     * A=F,B=T, : 0.3
-     * A=F,B=F, : 0.4
+     * Removing duplicate values in keys
      *
-     * @param factor input factor
-     * @return output factor without duplicate values
+     * @param factor
+     * @return output factor removed duplicate values
      */
-    public static LinkedHashMap<String, Double> fixingDuplicatesValuesInKeys(LinkedHashMap<String, Double> factor) {
+    public static LinkedHashMap<String, Double> removeDuplicateValuesInKeys(LinkedHashMap<String, Double> factor) {
 
-        // result factor
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
 
-        if(factor.size() == 1 && CPTBuilder.getNames(factor).size() == 1) {
+        if (factor.size() == 1 && CPT.getNames(factor).size() == 1) {
             return factor;
         }
 
-        // all outcomes linked hash map in factor
-        LinkedHashMap<String, List<String>> outcomes = CPTBuilder.getNamesAndOutcomes(factor);
+        LinkedHashMap<String, List<String>> outcomes = CPT.getNamesAndOutcomes(factor);
 
         if (outcomes.size() == 0) {
             return result;
@@ -136,29 +130,19 @@ public class UtilFunctions {
         }
 
         for (Map.Entry<String, Double> entry : factor.entrySet()) {
-            StringBuilder new_key = new StringBuilder();
-            List<String> new_key_split = separateByCommas(entry.getKey());
+            StringBuilder newKey = new StringBuilder();
+            List<String> newKeySplit = separateByCommas(entry.getKey());
 
-            for (String key : new_key_split) {
+            for (String key : newKeySplit) {
 
-                // create new key for the result linked hash map
                 if (!unWelcomeValues.contains(key)) {
-                    new_key.append(key).append(",");
+                    newKey.append(key).append(",");
                 }
             }
-            result.put(new_key.substring(0, new_key.length() - 1), entry.getValue());
+            result.put(newKey.substring(0, newKey.length() - 1), entry.getValue());
         }
 
         return result;
     }
 
-    /**
-     * @param d a double value
-     * @return the double value only with 6 decimal places after the decimal point
-     */
-    public static double roundFiveDecimalPlaces(double d) {
-        BigDecimal bigDecimal = new BigDecimal(Double.toString(d));
-        bigDecimal = bigDecimal.setScale(5, RoundingMode.HALF_UP);
-        return bigDecimal.doubleValue();
-    }
 }

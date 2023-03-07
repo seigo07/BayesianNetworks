@@ -1,7 +1,7 @@
 import java.util.*;
 
 /**
- * this class represents a Variable in a
+ * The class for variable
  */
 public class Variable {
     private final String name;
@@ -13,10 +13,10 @@ public class Variable {
     public boolean uninitialized;
 
     /**
-     * constructor to create a variables without initialize parents and values
+     * Constructor
      *
-     * @param name     the name of the variable (for instance "A", "E", "VariableA" ...)
-     * @param outcomes the outcomes this variable can get (for instance [T, F] or [v1, v2, v3]...)
+     * @param name     the name of the variable
+     * @param outcomes [T, F]
      */
     public Variable(String name, List<String> outcomes) {
         this.name = name;
@@ -28,35 +28,35 @@ public class Variable {
     }
 
     /**
-     * initialize parents after creating the variable
+     * Initialization of parents after creating the variable
      *
-     * @param values  outcomes values
-     * @param parents variable parents
+     * @param values  the values of outcomes
+     * @param parents the variables of parents
      */
-    public void initialize_parents(double[] values, Variable[] parents) {
+    public void initParents(double[] values, Variable[] parents) {
 
         this.parents = new ArrayList<>(Arrays.asList(parents));
 
-        // do not have parents
+        // No parents
         if (this.parents.size() == 0) {
 
             for (int i = 0; i < this.outcomes.size(); i++) {
                 this.cpt.put(this.name + '=' + this.outcomes.get(i), values[i]);
             }
 
-            // have parents
+        // Having parents
         } else {
 
-            List<List<String>> all_outcomes = new ArrayList<>();
-            List<String> all_names = new ArrayList<>();
+            List<List<String>> outcomes = new ArrayList<>();
+            List<String> names = new ArrayList<>();
 
             for (Variable p : this.parents) {
-                all_outcomes.add(p.outcomes);
-                all_names.add(p.name);
+                outcomes.add(p.outcomes);
+                names.add(p.name);
             }
-            all_outcomes.add(this.outcomes);
-            all_names.add(this.name);
-            this.cpt = CPTBuilder.buildCPTLinkedHashMap(values, all_outcomes, all_names);
+            outcomes.add(this.outcomes);
+            names.add(this.name);
+            this.cpt = CPT.constructCPT(values, outcomes, names);
 
         }
         this.uninitialized = true;
@@ -64,25 +64,21 @@ public class Variable {
     }
 
     /**
-     * @return - parents list
+     * @return - parents
      */
     public List<Variable> getParents() {
         return this.parents;
     }
 
     /**
-     * @return - true if variables has parents, else return false
+     * @return - the name of variable
      */
-    public boolean hasParents() {
-        return this.parents.size() > 0;
-    }
-
     public String getName() {
         return this.name;
     }
 
     /**
-     * set shaded - using for the bayes-ball algorithm
+     * set shaded - using for the bayes ball algorithm
      *
      * @param shaded - true or false
      */
@@ -91,7 +87,7 @@ public class Variable {
     }
 
     /**
-     * @return - shaded status
+     * @return - the status of shaded
      */
     public boolean isShaded() {
         return this.shaded;
@@ -105,29 +101,15 @@ public class Variable {
     }
 
     /**
-     * @return variable outcomes
+     * @return the outcomes of variable
      */
     public List<String> getOutcomes() {
         return this.outcomes;
     }
 
     /**
-     * @param parent_check the variable we go throw parents and check if he is one of them
-     * @return true of and only if parent_check is a parent or grandparent of this variable
+     * @return whether the variable is from child or not
      */
-    public boolean isGrandParent(Variable parent_check) {
-        return isGrandParent(parent_check, this);
-    }
-
-    private boolean isGrandParent(Variable parent_check, Variable current) {
-        if (current.getName().equals(parent_check.getName())) return true;
-        if (!current.hasParents()) return false;
-        for (Variable parent : current.parents) {
-            if (isGrandParent(parent_check, parent)) return true;
-        }
-        return false;
-    }
-
     public boolean isFromChild() {
         return this.fromChild;
     }
@@ -137,9 +119,9 @@ public class Variable {
     }
 
     /**
-     * to string method
+     * Converting to string
      *
-     * @return - string represents the variable
+     * @return - string of the variable
      */
     @Override
     public String toString() {

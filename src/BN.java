@@ -1,83 +1,130 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 /**
- * Class for BN object.
+ * The class for BN
  */
 public class BN {
 
-    private final HashMap<String, BNVariable> networkNodes; // Mapping of variable names to their corresponding variable objects.
+    private final List<Variable> variables;
 
+    private final LinkedHashMap<String, List<Variable>> parents;
 
-    /**
-     * Blank Constructor:
-     */
-    public BN() {
-        networkNodes = new HashMap<>(); // Initialise the BN structure.
-    } // BayesianNetwork().
+    private final LinkedHashMap<String, List<Variable>> children;
+
+    private static final List<Variable> empties = new ArrayList<>();
 
     /**
-     * Add a variable to the network.
+     * Constructor
      *
-     * @param name Name of the variable.
-     * @param outcomes Outcomes of the variable (binary for this practical).
-     * @param position Position property string for the AISpace tool.
+     * @param variables
      */
-    public void addVariable(String name, ArrayList<String> outcomes, String position) {
-        this.networkNodes.put(name, new BNVariable(name, outcomes, position));
-    } // addVariable().
+    public BN(List<Variable> variables) {
+        this.variables = new ArrayList<>(variables);
+        this.parents = new LinkedHashMap<>();
+        this.children = new LinkedHashMap<>();
+        initParentsAndChildren();
+    }
 
     /**
-     * Add a variable to the network.
-     *
-     * @param name Name of the variable.
-     * @param outcomes Outcomes of the variable.
-     * @param position Position property string used to place the variable in the AISpace tool canvas.
-     * @param parents Parents of this variable.
-     * @param probTable (Conditional) Probability Table of this variable.
+     * Initialization parents and children
      */
-    public void addVariable(String name, ArrayList<String> outcomes, String position, ArrayList<String> parents,
-                            ArrayList<Double> probTable) {
+    private void initParentsAndChildren() {
 
-        this.networkNodes.put(name, new BNVariable());
+        for (Variable variable : this.variables) {
 
-    } // addVariable().
+            List<Variable> variableParents = variable.getParents();
 
-    /**
-     * Get a variable from the network.
-     *
-     * @param name Name of the variable to get.
-     * @return Variable object of the variable name requested, null if does not exist.
-     */
-    public BNVariable getVariable(String name) {
-        return networkNodes.get(name);
-    } // getVariable().
+            if (variableParents != null) {
 
-    /**
-     * Get the set of variable names for this Bayesian network.
-     *
-     * @return Hash set of variable names for this BN.
-     */
-    public HashSet<String> getVariableNames() {
-        return new HashSet<>(networkNodes.keySet());
-    } // getVariableNames().
+                // Adding parents to current variable
+                this.parents.put(variable.getName(), variableParents);
 
-    /**
-     * Get the set of variables for this Bayesian network.
-     *
-     * @return Hash set of variables for this BN.
-     */
-    public HashSet<BNVariable> getVariables() {
-        return new HashSet<>(networkNodes.values());
-    } // getVariables().
+                // Adding children for each parent of current variable
+                for (Variable parent : variableParents) {
 
-    public ArrayList<BNVariable> getVariablesArrayList() {
-        ArrayList<BNVariable> variables = new ArrayList<>();
-        for (BNVariable v : networkNodes.values()) {
-            variables.add(v);
+                    // Adding current variable to children if current parent already has child
+                    if (this.children.containsKey(parent.getName())) {
+                        this.children.get(parent.getName()).add(variable);
+                        // Adding current variable to the parent if current parent doesn't have children
+                    } else {
+                        List<Variable> variablelist = new ArrayList<>();
+                        variablelist.add(variable);
+                        this.children.put(parent.getName(), variablelist);
+                    }
+                }
+            }
+
         }
-        return variables;
+
+        // Fixing variables hashmaps
+        for (Variable variable : this.variables) {
+            if (!this.parents.containsKey(variable.getName())) {
+                this.parents.put(variable.getName(), empties);
+            }
+            if (!this.children.containsKey(variable.getName())) {
+                this.children.put(variable.getName(), empties);
+            }
+        }
+    }
+
+    /**
+     * @return - variables
+     */
+    public List<Variable> getVariables() {
+        return this.variables;
+    }
+
+    /**
+     * @return - parents
+     */
+    public LinkedHashMap<String, List<Variable>> getParents() {
+        return this.parents;
+    }
+
+
+    /**
+     * @return - The number of variables
+     */
+    public int getVariablesSize() {
+        return this.variables.size();
+    }
+
+    /**
+     * Returning a variable by its name
+     *
+     * @param name
+     * @return variable
+     */
+    public Variable getVariableByName(String name) {
+        for (int i = 0; i < this.getVariablesSize(); i++) {
+            Variable variable = this.variables.get(i);
+            if (variable.getName().equals(name)) {
+                return variable;
+            }
+        }
+        return null;
+    }
+
+    public List<Variable> getNeighborVariables(Variable variable) {
+        List<Variable> neighborVariables = new ArrayList<>(this.children.get(variable.getName()));
+        if (variable.isFromChild()) {
+            neighborVariables.addAll(this.parents.get(variable.getName()));
+        }
+        return neighborVariables;
+    }
+
+    /**
+     * Converting to string
+     *
+     * @return string represents the BNs, print each CPT of the variables
+     */
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append("TO STRING BNs:\n");
+        for (Variable variable : this.variables) {
+            result.append(variable.getName()).append(":\n").append(Utils.hashMapToString(variable.getCPT()));
+        }
+        return result.toString();
     }
 }
