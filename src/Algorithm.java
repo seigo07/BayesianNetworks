@@ -20,6 +20,13 @@ public class Algorithm {
         Variable queryVariable = bn.getVariableByName(var);
         String queryValue = val;
 
+        List<Variable> orderedVariables = new ArrayList<>();
+        if (orderedVariables != null) {
+            for (String s : order) {
+                orderedVariables.add(bn.getVariableByName(s));
+            }
+        }
+
         List<String> evidenceValues = new ArrayList<>();
         List<Variable> evidenceVariables = new ArrayList<>();
         if (evidences != null && evidences.size() > 0) {
@@ -50,6 +57,30 @@ public class Algorithm {
             factors.put(variable.getName(), CPT.updateCPT(evidenceVariablesNames, evidenceValues, variable.getCPT()));
         }
 
+        // checking for each orderedVariables variable if he is parent or grandparent of variable in checking (hypothesis + evidence)
+//        List<Variable> checking = new ArrayList<>();
+//        checking.add(queryVariable);
+//        checking.addAll(evidenceVariables);
+//
+//        LinkedHashMap<String, Boolean> not_grandparents = new LinkedHashMap<>();
+//        for (Variable h : orderedVariables) {
+//            not_grandparents.put(h.getName(), false);
+//        }
+//
+//        for (Variable v : checking) {
+//            for (Variable h : orderedVariables) {
+//                boolean b = not_grandparents.get(h.getName());
+//                not_grandparents.put(h.getName(), b | v.isGrandParent(h));
+//            }
+//        }
+//
+//        // if we found orderedVariables variable that he is not parent of grandparent of hypothesis and evidence we delete hom from factors
+//        for (Map.Entry<String, Boolean> entry : not_grandparents.entrySet()) {
+//            if (!entry.getValue()) {
+//                factors.remove(entry.getKey());
+//            }
+//        }
+
         // Checking whether one of the factors includes the necessary value of queryVariable alone
         if (evidenceVariables.isEmpty()) {
             for (Map.Entry<String, LinkedHashMap<String, Double>> f : factors.entrySet()) {
@@ -73,6 +104,64 @@ public class Algorithm {
 //            System.out.println(Utils.hashMapToString(f.getValue()));
         }
 //        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+
+        // join all factors for each orderedVariables variable
+        if (!orderedVariables.isEmpty()) {
+            for (Variable h : orderedVariables) {
+
+                // the CPTs that the orderedVariables variable is in
+                List<LinkedHashMap<String, Double>> cpts = new ArrayList<>();
+                List<String> variableNames = new ArrayList<>();
+
+                for (Map.Entry<String, LinkedHashMap<String, Double>> entry : factors.entrySet()) {
+                    if (CPT.getNames(entry.getValue()).contains(h.getName())) {
+                        cpts.add(entry.getValue());
+                        variableNames.add(entry.getKey());
+                    }
+                }
+
+                String lastName = "empty";
+                if (variableNames.size() > 1) {
+                    for (String name : variableNames) {
+                        factors.remove(name);
+                        lastName = name;
+                    }
+                } else if (variableNames.size() == 1) {
+                    lastName = variableNames.get(0);
+                }
+
+                if (!cpts.isEmpty()) {
+                    if (cpts.size() > 0) {
+
+//                        System.out.println("\nfactor to join with " + h.getName() + ":\n");
+                        for (LinkedHashMap<String, Double> cpt : cpts) {
+//                            System.out.println(Utils.hashMapToString(cpt));
+                        }
+
+                        // join cpt_to_join (all the factors that mentioning h) to one factor
+                        LinkedHashMap<String, Double> newFactor = CPT.integrateFactors(cpts, counter);
+
+//                        System.out.println("\tFactor BEFORE Eliminate on " + h.getName() + "\n");
+//                        System.out.println("factorCounter: " + counter);
+//                        System.out.println(Utils.hashMapToString(newFactor));
+
+                        boolean factorToAdd = true;
+
+                        // eliminate factor
+                        if (CPT.getNames(newFactor).size() > 0) {
+                            newFactor = CPT.eliminate(newFactor, h, counter);
+                        } else if (CPT.getNames(newFactor).size() == 1) {
+                            factorToAdd = false;
+                        }
+
+//                        System.out.println("\tFactor AFTER Eliminate on " + h.getName() + "\n");
+//                        System.out.println("factorCounter: " + counter);
+//                        System.out.println(Utils.hashMapToString(newFactor));
+                        if (factorToAdd) factors.put(lastName, newFactor);
+                    }
+                }
+            }
+        }
 
 //        System.out.println();
 //        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
@@ -124,7 +213,8 @@ public class Algorithm {
 
         // Set variable elimination order for Part 2 if order is passed.
         // If not, set an automatic order for Part 3.
-        List<String> variableNames = order.isEmpty() ? CPT.getNames(lastFactor) : order;
+//        List<String> variableNames = order.isEmpty() ? CPT.getNames(lastFactor) : order;
+        List<String> variableNames = CPT.getNames(lastFactor);
         if (variableNames.size() > 1) {
             variableNames.remove(queryVariable.getName());
 //            System.out.println("initial lastFactor: " + lastFactor);
@@ -158,6 +248,7 @@ public class Algorithm {
         result.add((double) counter.getSumCount());
         // The number of multiples
         result.add((double) counter.getMultiCount());
+//        System.out.println("counter: " + counter);
 
         return result;
     }
