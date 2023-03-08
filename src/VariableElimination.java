@@ -1,4 +1,3 @@
-import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -28,6 +27,8 @@ public class VariableElimination {
             }
         }
 
+//        System.out.println("queryVariable: " + queryVariable + ", queryValue: " + queryValue + ", evidences: " + evidences + ", order: " + order);
+
         List<String> evidenceValues = new ArrayList<>();
         List<Variable> evidenceVariables = new ArrayList<>();
         if (evidences != null && evidences.size() > 0) {
@@ -39,12 +40,10 @@ public class VariableElimination {
             }
         }
 
-//        System.out.println("queryVariable: " + queryVariable + ", queryValue: " + queryValue + ", evidenceVariables: " + evidenceVariables + ", evidenceValues: " + evidenceValues);
-
-        // This counter counts the number of addition and multiplication operations in Variable Elimination
+        // The counter for the number of addition and multiplication
         Counter counter = new Counter();
 
-        // The hashmap of factors for each variable
+        // The factors for variables
         LinkedHashMap<String, LinkedHashMap<String, Double>> factors = new LinkedHashMap<>();
 
         // Adding the names of evidenceVariables to evidenceVariablesNames
@@ -58,30 +57,6 @@ public class VariableElimination {
             factors.put(variable.getName(), CPT.updateCPT(evidenceVariablesNames, evidenceValues, variable.getCPT()));
         }
 
-        // checking for each orderedVariables variable if he is parent or grandparent of variable in checking (hypothesis + evidence)
-//        List<Variable> checking = new ArrayList<>();
-//        checking.add(queryVariable);
-//        checking.addAll(evidenceVariables);
-//
-//        LinkedHashMap<String, Boolean> not_grandparents = new LinkedHashMap<>();
-//        for (Variable h : orderedVariables) {
-//            not_grandparents.put(h.getName(), false);
-//        }
-//
-//        for (Variable v : checking) {
-//            for (Variable h : orderedVariables) {
-//                boolean b = not_grandparents.get(h.getName());
-//                not_grandparents.put(h.getName(), b | v.isGrandParent(h));
-//            }
-//        }
-//
-//        // if we found orderedVariables variable that he is not parent of grandparent of hypothesis and evidence we delete hom from factors
-//        for (Map.Entry<String, Boolean> entry : not_grandparents.entrySet()) {
-//            if (!entry.getValue()) {
-//                factors.remove(entry.getKey());
-//            }
-//        }
-
         // Checking whether one of the factors includes the necessary value of queryVariable alone
         if (evidenceVariables.isEmpty()) {
             for (Map.Entry<String, LinkedHashMap<String, Double>> f : factors.entrySet()) {
@@ -91,28 +66,23 @@ public class VariableElimination {
                         result.add(line.getValue());
                         result.add(0.0);
                         result.add(0.0);
-//                        System.out.println("FINAL VALUE IS " + line.getValue());
                         return result;
                     }
                 }
             }
         }
 
-//        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 //        System.out.println("Initial Factors:");
-        for (Map.Entry<String, LinkedHashMap<String, Double>> f : factors.entrySet()) {
+//        for (Map.Entry<String, LinkedHashMap<String, Double>> f : factors.entrySet()) {
 //            System.out.println(f.getKey() + ":");
 //            System.out.println(Utils.hashMapToString(f.getValue()));
-        }
-//        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-//
-//        System.out.println("Given Order: ");
-//        System.out.println(order + "\n");
-        // join all factors for each orderedVariables variable
+//        }
+
+        // Join factors for each ordered variable
         if (!orderedVariables.isEmpty()) {
             for (Variable h : orderedVariables) {
 
-                // the CPTs that the orderedVariables variable is in
+                // CPTs which includes the orderedVariables
                 List<LinkedHashMap<String, Double>> cpts = new ArrayList<>();
                 List<String> variableNames = new ArrayList<>();
 
@@ -136,16 +106,16 @@ public class VariableElimination {
                 if (!cpts.isEmpty()) {
                     if (cpts.size() > 0) {
 
-//                        System.out.println("Factor to join with " + h.getName() + ":\n");
-                        for (LinkedHashMap<String, Double> cpt : cpts) {
+//                        System.out.println("Factor which joins with " + h.getName() + ":\n");
+//                        for (LinkedHashMap<String, Double> cpt : cpts) {
 //                            System.out.println(Utils.hashMapToString(cpt));
-                        }
+//                        }
 
                         // join cpt_to_join (all the factors that mentioning h) to one factor
                         LinkedHashMap<String, Double> newFactor = CPT.integrateFactors(cpts, counter);
 
-//                        System.out.println("Factor before eliminate " + h.getName() + "\n");
-//                        System.out.println("factorCounter: " + counter);
+//                        System.out.println("Before eliminate " + h.getName() + "\n");
+//                        System.out.println("counter: " + counter);
 //                        System.out.println(Utils.hashMapToString(newFactor));
 
                         boolean factorToAdd = true;
@@ -157,8 +127,8 @@ public class VariableElimination {
                             factorToAdd = false;
                         }
 
-//                        System.out.println("Factor after eliminate " + h.getName() + "\n");
-//                        System.out.println("factorCounter: " + counter);
+//                        System.out.println("After eliminate " + h.getName() + "\n");
+//                        System.out.println("counter: " + counter);
 //                        System.out.println(Utils.hashMapToString(newFactor));
                         if (factorToAdd) factors.put(lastName, newFactor);
                     }
@@ -166,48 +136,41 @@ public class VariableElimination {
             }
         }
 
-//        System.out.println();
-//        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-//        System.out.println("CURRENT FACTORS:");
+//        System.out.println("Remaining Factors: ");
         for (Map.Entry<String, LinkedHashMap<String, Double>> f : factors.entrySet()) {
 //            System.out.println("Name: " + f.getKey());
 //            System.out.println(Utils.hashMapToString(f.getValue()));
         }
-//        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
-        // removing the factors with size of one or less
+        // Removing the factors if the size <= 1
         LinkedHashMap<String, Integer> sizes = new LinkedHashMap<>();
         for (Map.Entry<String, LinkedHashMap<String, Double>> factor : factors.entrySet()) {
             sizes.put(factor.getKey(), factor.getValue().size());
         }
-
         for (Map.Entry<String, Integer> factor : sizes.entrySet()) {
             if (factor.getValue() <= 1) {
                 factors.remove(factor.getKey());
             }
         }
 
-        // eliminate again if still the factor contains other different outcomes of
-//        System.out.println("-------------------------------BEFORE END PRINT FACTORS----------------------------------");
-        for (Map.Entry<String, LinkedHashMap<String, Double>> e : factors.entrySet()) {
-//            System.out.pri/ntln(Utils.hashMapToString(e.getValue()));
-        }
-//        System.out.println("-----------------------------------------------------------------------------------------");
+//        for (Map.Entry<String, LinkedHashMap<String, Double>> e : factors.entrySet()) {
+//            System.out.println(Utils.hashMapToString(e.getValue()));
+//        }
 
         LinkedHashMap<String, Double> lastFactor = new LinkedHashMap<>();
 
-        // If the factors include more than one factor
+        // In the case of including more than one factor
         if (factors.size() > 1) {
             List<LinkedHashMap<String, Double>> factorsLeft = new ArrayList<>();
             for (Map.Entry<String, LinkedHashMap<String, Double>> factor : factors.entrySet()) {
                 factorsLeft.add(factor.getValue());
             }
             lastFactor = CPT.integrateFactors(factorsLeft, counter);
-            // Getting the one left factor
+        // Getting the one left factor
         } else {
             for (Map.Entry<String, LinkedHashMap<String, Double>> factor : factors.entrySet()) {
                 lastFactor = new LinkedHashMap<>(factor.getValue());
-//                System.out.println("LAST FACTOR:");
+//                System.out.println("last factor:");
 //                System.out.println(Utils.hashMapToString(lastFactor));
                 break;
             }
@@ -216,21 +179,21 @@ public class VariableElimination {
         List<String> variableNames = CPT.getNames(lastFactor);
         if (variableNames.size() > 1) {
             variableNames.remove(queryVariable.getName());
-//            System.out.println("Factors updated by evidence:: ");
+//            System.out.println("Updated factors based on the evidence: ");
 //            System.out.println(Utils.hashMapToString(lastFactor));
             for (String name : variableNames) {
 //                System.out.println("Name: " + name);
                 lastFactor = CPT.eliminate(lastFactor, bn.getVariableByName(name), counter);
 //                System.out.println("Factors after eliminate " + name + ": ");
 //                System.out.println(Utils.hashMapToString(lastFactor));
-                Double cptValue = 0.0;
-                List<String> cptCalculation = new ArrayList<>();
-                for (Map.Entry<String, Double> f : lastFactor.entrySet()) {
-                    cptValue += f.getValue();
-                    cptCalculation.add(Double.toString(f.getValue()));
-                }
+//                Double cptValue = 0.0;
+//                List<String> cptCalculation = new ArrayList<>();
+//                for (Map.Entry<String, Double> f : lastFactor.entrySet()) {
+//                    cptValue += f.getValue();
+//                    cptCalculation.add(Double.toString(f.getValue()));
+//                }
 //                String cptFormula = String.join(" + ", cptCalculation);
-                String cptFormula = String.join(" + \n", cptCalculation);
+//                String cptFormula = String.join(" + \n", cptCalculation);
 //                System.out.println("Sum of CPT = " + cptFormula + " = " + Math.round(cptValue));
 //                System.out.println("Sum of CPT = " + cptFormula + " = " + Math.round(cptValue) + "\n");
             }
@@ -278,10 +241,8 @@ public class VariableElimination {
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
         factor = Utils.removeDuplicateValuesInKeys(factor);
 
-//        System.out.println("=======================================================================================");
-//        System.out.println("Factor to Normalize:");
+//        System.out.println("Normalizable factor :");
 //        System.out.println(Utils.hashMapToString(factor));
-//        System.out.println("=======================================================================================");
 
         LinkedHashMap<String, List<String>> outcomes = CPT.getNamesAndOutcomes(factor);
         String variableName = "";
