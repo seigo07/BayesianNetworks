@@ -31,8 +31,6 @@ public class A2main {
         Document doc = FileManager.readXML(filePath);
         List<Variable> variables = new ArrayList<>(FileManager.buildVariables(doc));
         BN bn = new BN(variables);
-        // Output text for output file
-        StringBuilder output = new StringBuilder();
         Scanner sc = new Scanner(System.in);
 
         switch (args[0]) {
@@ -60,14 +58,6 @@ public class A2main {
                 List<Double> results = Algorithm.VE(variable, value, new ArrayList<>(), order, bn);
                 double result = results.get(0);
                 printResult(result);
-
-                // need to save output to output txt file...
-//                output.append(UtilFunctions.roundFiveDecimalPlaces(results.get(0)));
-//                output.append(",");
-//                output.append((long)Math.floor(results.get(1)));
-//                output.append(",");
-//                output.append((long)Math.floor(results.get(2)));
-//                System.out.println("output:\n" + output);
             }
             break;
 
@@ -81,14 +71,6 @@ public class A2main {
                 List<Double> results = Algorithm.VE(variable, value, evidence, new ArrayList<>(), bn);
                 double result = results.get(0);
                 printResult(result);
-
-                // need to save output to output txt file...
-//                output.append(UtilFunctions.roundFiveDecimalPlaces(results.get(0)));
-//                output.append(",");
-//                output.append((long)Math.floor(results.get(1)));
-//                output.append(",");
-//                output.append((long)Math.floor(results.get(2)));
-//                System.out.println("output:\n" + output);
             }
             break;
 
