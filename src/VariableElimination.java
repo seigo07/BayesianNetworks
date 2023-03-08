@@ -3,7 +3,7 @@ import java.util.*;
 /**
  * The class
  */
-public class Algorithm {
+public class VariableElimination {
 
     /**
      * The function for Variable Elimination
@@ -302,73 +302,4 @@ public class Algorithm {
         return result;
     }
 
-    /**
-     * bayes ball algorithm using BFS algorithm
-     *
-     * @param startNode       the starting variable name position of the BFS algorithm
-     * @param destinationNode the target variable which is the algorithm is searching for
-     * @param nodesNames      evidence variables in the query
-     * @param bn              instance of BN class
-     * @return true if the startNode and the destinationNode are independents
-     */
-    public boolean bayesBall(String startNode, String destinationNode, List<String> nodesNames, BN bn) {
-        List<Variable> evidencesVariables = new ArrayList<>();
-        if (nodesNames != null) {
-            for (String name : nodesNames) {
-                evidencesVariables.add(bn.getVariableByName(name));
-            }
-        }
-        Variable startVariable = bn.getVariableByName(startNode);
-        Variable destinationVariable = bn.getVariableByName(destinationNode);
-
-        if (startVariable == null || destinationVariable == null) return true;
-        if (startVariable.equals(destinationVariable)) return false;
-        LinkedHashMap<Variable, Visited> visited = new LinkedHashMap<>();
-
-        for (Variable variable : bn.getVariables()) {
-            variable.setShade(evidencesVariables.contains(variable));
-            variable.setFromChild(false);
-            visited.put(variable, Visited.NO);
-        }
-
-        visited.put(startVariable, Visited.YES);
-        Queue<Variable> queue = new LinkedList<>();
-        queue.add(startVariable);
-
-        while (!queue.isEmpty()) {
-            Variable v = queue.poll();
-//            System.out.println("poll: " + v + ", neighbors: " + getNeighbors(v));
-            for (Variable u : bn.getNeighborVariables(v)) {
-//                System.out.println("V: " + v + ", U: " + u);
-                // found destination
-                if (u.equals(destinationVariable)) {
-//                    System.out.println("found " + destinationVariable);
-                    return false;
-                }
-
-                // if u is parent of v
-                if (bn.getParents().get(v.getName()).contains(u)) {
-                    queue.add(u);
-                    u.setFromChild(true);
-//                    System.out.println(u + " is parent of " + v);
-                    // u is child of v
-                } else if (visited.get(u) == Visited.NO) {
-                    queue.add(u);
-                    visited.put(u, Visited.YES);
-                    u.setFromChild(false);
-//                    System.out.println(u + " is child of " + v);
-
-                    // found evidence variable
-                    if (u.isShaded()) {
-                        u.setFromChild(true);
-                        if (v.isShaded()) {
-                            u.setFromChild(false);
-                        }
-//                        System.out.println(u + " is evidence");
-                    }
-                }
-            }
-        }
-        return true;
-    }
 }
