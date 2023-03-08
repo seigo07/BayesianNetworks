@@ -107,7 +107,14 @@ public class A2main {
                 List<Integer> sortedVariables = bna.topologicalSort();
                 List<String> sortedOrder = bna.getSortedOrder(sortedVariables, variablesWithNumber);
                 System.out.println("sortedOrder: "+sortedOrder);
-                break;
+
+                // construct the network based on the specification in args[1]
+                String[] query = getQueriedNode(sc);
+                String variable = query[0];
+                String value = query[1];
+                List<Double> results = VariableElimination.VE(variable, value, new ArrayList<>(), new ArrayList<>(), bn);
+                double result = results.get(0);
+                printResult(result);
             }
 
             default: {

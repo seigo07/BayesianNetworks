@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -222,6 +223,16 @@ public class VariableElimination {
                 lastFactor = CPT.eliminate(lastFactor, bn.getVariableByName(name), counter);
                 System.out.println("Factors after eliminate " + name + ": ");
                 System.out.println(Utils.hashMapToString(lastFactor));
+                Double cptValue = 0.0;
+                List<String> cptCalculation = new ArrayList<>();
+                for (Map.Entry<String, Double> f : lastFactor.entrySet()) {
+                    cptValue += f.getValue();
+                    cptCalculation.add(Double.toString(f.getValue()));
+                }
+//                String cptFormula = String.join(" + ", cptCalculation);
+                String cptFormula = String.join(" + \n", cptCalculation);
+//                System.out.println("Sum of CPT = " + cptFormula + " = " + Math.round(cptValue));
+                System.out.println("Sum of CPT = " + cptFormula + " = " + Math.round(cptValue) + "\n");
             }
         }
 
