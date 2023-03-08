@@ -75,8 +75,39 @@ public class A2main {
             break;
 
             case "P4": {
-                // construct the network based on the specification in args[1]
 
+                // Validate a given BN should be DAG
+                HashMap<String, Integer> variablesWithNumber = TopologicalSort.getVariablesWithNumber(variables);
+                TopologicalSort bna = new TopologicalSort(variablesWithNumber.size());
+
+                // BNA
+                if (variablesWithNumber.size() == 4) {
+                    bna.addEdge(variablesWithNumber.get("A"), variablesWithNumber.get("B"));
+                    bna.addEdge(variablesWithNumber.get("B"), variablesWithNumber.get("C"));
+                    bna.addEdge(variablesWithNumber.get("C"), variablesWithNumber.get("D"));
+                // BNB
+                } else if (variablesWithNumber.size() == 6) {
+                    bna.addEdge(variablesWithNumber.get("J"), variablesWithNumber.get("K"));
+                    bna.addEdge(variablesWithNumber.get("K"), variablesWithNumber.get("M"));
+                    bna.addEdge(variablesWithNumber.get("L"), variablesWithNumber.get("M"));
+                    bna.addEdge(variablesWithNumber.get("M"), variablesWithNumber.get("N"));
+                    bna.addEdge(variablesWithNumber.get("M"), variablesWithNumber.get("O"));
+                // BNC
+                } else if (variablesWithNumber.size() == 7) {
+                    bna.addEdge(variablesWithNumber.get("P"), variablesWithNumber.get("Q"));
+                    bna.addEdge(variablesWithNumber.get("R"), variablesWithNumber.get("S"));
+                    bna.addEdge(variablesWithNumber.get("Q"), variablesWithNumber.get("S"));
+                    bna.addEdge(variablesWithNumber.get("S"), variablesWithNumber.get("U"));
+                    bna.addEdge(variablesWithNumber.get("R"), variablesWithNumber.get("V"));
+                    bna.addEdge(variablesWithNumber.get("Q"), variablesWithNumber.get("V"));
+                    bna.addEdge(variablesWithNumber.get("S"), variablesWithNumber.get("Z"));
+                    bna.addEdge(variablesWithNumber.get("V"), variablesWithNumber.get("Z"));
+                }
+
+                List<Integer> sortedVariables = bna.topologicalSort();
+                List<String> sortedOrder = bna.getSortedOrder(sortedVariables, variablesWithNumber);
+                System.out.println("sortedOrder: "+sortedOrder);
+                break;
             }
 
             default: {
