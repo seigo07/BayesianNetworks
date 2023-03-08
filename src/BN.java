@@ -105,14 +105,6 @@ public class BN {
         return null;
     }
 
-    public List<Variable> getNeighborVariables(Variable variable) {
-        List<Variable> neighborVariables = new ArrayList<>(this.children.get(variable.getName()));
-        if (variable.isFromChild()) {
-            neighborVariables.addAll(this.parents.get(variable.getName()));
-        }
-        return neighborVariables;
-    }
-
     /**
      * Converting to string
      *

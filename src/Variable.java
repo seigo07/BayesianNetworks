@@ -8,7 +8,6 @@ public class Variable {
     private List<Variable> parents;
     private final List<String> outcomes;
     private LinkedHashMap<String, Double> cpt;
-    private boolean shaded;
     private boolean fromChild;
     public boolean uninitialized;
 
@@ -22,7 +21,6 @@ public class Variable {
         this.name = name;
         this.outcomes = outcomes;
         this.cpt = new LinkedHashMap<>();
-        this.shaded = false;
         this.uninitialized = false;
         this.fromChild = false;
     }
@@ -78,22 +76,6 @@ public class Variable {
     }
 
     /**
-     * set shaded - using for the bayes ball algorithm
-     *
-     * @param shaded - true or false
-     */
-    public void setShade(boolean shaded) {
-        this.shaded = shaded;
-    }
-
-    /**
-     * @return - the status of shaded
-     */
-    public boolean isShaded() {
-        return this.shaded;
-    }
-
-    /**
      * @return the origin cpt of this variable
      */
     public LinkedHashMap<String, Double> getCPT() {
@@ -108,38 +90,10 @@ public class Variable {
     }
 
     /**
-     * @param parent_check the variable we go throw parents and check if he is one of them
-     * @return true of and only if parent_check is a parent or grandparent of this variable
-     */
-    public boolean isGrandParent(Variable parent_check) {
-        return isGrandParent(parent_check, this);
-    }
-
-    private boolean isGrandParent(Variable parent_check, Variable current) {
-        if (current.getName().equals(parent_check.getName())) return true;
-        if (!current.hasParents()) return false;
-        for (Variable parent : current.parents) {
-            if (isGrandParent(parent_check, parent)) return true;
-        }
-        return false;
-    }
-
-    /**
-     * @return - true if variables has parents, else return false
-     */
-    public boolean hasParents() {
-        return this.parents.size() > 0;
-    }
-
-    /**
      * @return whether the variable is from child or not
      */
     public boolean isFromChild() {
         return this.fromChild;
-    }
-
-    public void setFromChild(boolean fromParents) {
-        this.fromChild = fromParents;
     }
 
     /**

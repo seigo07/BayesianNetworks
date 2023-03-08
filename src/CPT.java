@@ -18,9 +18,9 @@ public class CPT {
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
 
 //        System.out.println("values: " + Arrays.toString(values));
-        for (List<String> o : outcomes) {
+//        for (List<String> o : outcomes) {
 //            System.out.println("outcome: " + o);
-        }
+//        }
 //        System.out.println("names: " + names);
 
 
@@ -111,12 +111,10 @@ public class CPT {
      */
     public static LinkedHashMap<String, Double> integrateTwoFactors(LinkedHashMap<String, Double> X, LinkedHashMap<String, Double> Y, Counter counter) {
 
-//        System.out.println("//////////////// JOIN //////////////////////");
 //        System.out.println("X:");
 //        System.out.println(Utils.hashMapToString(X));
 //        System.out.println("Y:");
 //        System.out.println(Utils.hashMapToString(Y));
-//        System.out.println("////////////////////////////////////////////");
 
         HashMap<String, List<String>> xOutcomes = getNamesAndOutcomes(X);
         HashMap<String, List<String>> yOutcomes = getNamesAndOutcomes(Y);
@@ -128,7 +126,7 @@ public class CPT {
 
         // Getting the names of the variables that the factor will include
         List<String> xyNamesIntersection = Utils.intersection(xNames, yNames);
-//        System.out.println("intersection: " + xyNamesIntersection);
+//        System.out.println("Intersection: " + xyNamesIntersection);
 
         // Integrating a factor into result
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
@@ -171,7 +169,7 @@ public class CPT {
             }
         }
 
-//        System.out.println("\nRESULT AFTER JOIN:");
+//        System.out.println("After join: ");
 //        System.out.println(Utils.hashMapToString(result));
 //        System.out.println();
 
@@ -310,7 +308,7 @@ public class CPT {
         for (int i = 0; i < sortedFactors.size(); i++) {
             for (int j = 0; j < sortedFactors.size() - 1; j++) {
                 if (compareCPT(sortedFactors.get(j), sortedFactors.get(j + 1))) {
-                    // swap factors
+                    // Exchange factors
                     LinkedHashMap<String, Double> temp = sortedFactors.get(j);
                     sortedFactors.set(j,sortedFactors.get(j+1));
                     sortedFactors.set(j + 1,temp);
