@@ -38,7 +38,7 @@ public class Algorithm {
             }
         }
 
-//        System.out.println("queryVariable: " + queryVariable + ", queryValue: " + queryValue + ", evidenceVariables: " + evidenceVariables + ", evidenceValues: " + evidenceValues);
+        System.out.println("queryVariable: " + queryVariable + ", queryValue: " + queryValue + ", evidenceVariables: " + evidenceVariables + ", evidenceValues: " + evidenceValues);
 
         // This counter counts the number of addition and multiplication operations in Variable Elimination
         Counter counter = new Counter();
@@ -90,21 +90,23 @@ public class Algorithm {
                         result.add(line.getValue());
                         result.add(0.0);
                         result.add(0.0);
-//                        System.out.println("FINAL VALUE IS " + line.getValue());
+                        System.out.println("FINAL VALUE IS " + line.getValue());
                         return result;
                     }
                 }
             }
         }
 
-//        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-//        System.out.println("FACTORS ADDED:");
+        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        System.out.println("Initial Factors:");
         for (Map.Entry<String, LinkedHashMap<String, Double>> f : factors.entrySet()) {
-//            System.out.println(f.getKey() + ":");
-//            System.out.println(Utils.hashMapToString(f.getValue()));
+            System.out.println(f.getKey() + ":");
+            System.out.println(Utils.hashMapToString(f.getValue()));
         }
-//        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
+        System.out.println("Given Order: ");
+        System.out.println(order + "\n");
         // join all factors for each orderedVariables variable
         if (!orderedVariables.isEmpty()) {
             for (Variable h : orderedVariables) {
@@ -133,17 +135,17 @@ public class Algorithm {
                 if (!cpts.isEmpty()) {
                     if (cpts.size() > 0) {
 
-//                        System.out.println("\nfactor to join with " + h.getName() + ":\n");
+                        System.out.println("Factor to join with " + h.getName() + ":\n");
                         for (LinkedHashMap<String, Double> cpt : cpts) {
-//                            System.out.println(Utils.hashMapToString(cpt));
+                            System.out.println(Utils.hashMapToString(cpt));
                         }
 
                         // join cpt_to_join (all the factors that mentioning h) to one factor
                         LinkedHashMap<String, Double> newFactor = CPT.integrateFactors(cpts, counter);
 
-//                        System.out.println("\tFactor BEFORE Eliminate on " + h.getName() + "\n");
+                        System.out.println("Factor before eliminate " + h.getName() + "\n");
 //                        System.out.println("factorCounter: " + counter);
-//                        System.out.println(Utils.hashMapToString(newFactor));
+                        System.out.println(Utils.hashMapToString(newFactor));
 
                         boolean factorToAdd = true;
 
@@ -154,23 +156,23 @@ public class Algorithm {
                             factorToAdd = false;
                         }
 
-//                        System.out.println("\tFactor AFTER Eliminate on " + h.getName() + "\n");
+                        System.out.println("Factor after eliminate " + h.getName() + "\n");
 //                        System.out.println("factorCounter: " + counter);
-//                        System.out.println(Utils.hashMapToString(newFactor));
+                        System.out.println(Utils.hashMapToString(newFactor));
                         if (factorToAdd) factors.put(lastName, newFactor);
                     }
                 }
             }
         }
 
-//        System.out.println();
-//        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-//        System.out.println("PRINT CURRENT FACTORS:");
+        System.out.println();
+        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        System.out.println("CURRENT FACTORS:");
         for (Map.Entry<String, LinkedHashMap<String, Double>> f : factors.entrySet()) {
-//            System.out.println("NAME: " + f.getKey());
-//            System.out.println(Utils.hashMapToString(f.getValue()));
+            System.out.println("Name: " + f.getKey());
+            System.out.println(Utils.hashMapToString(f.getValue()));
         }
-//        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
         // removing the factors with size of one or less
         LinkedHashMap<String, Integer> sizes = new LinkedHashMap<>();
@@ -185,12 +187,11 @@ public class Algorithm {
         }
 
         // eliminate again if still the factor contains other different outcomes of
-//        System.out.println("-------------------------------BEFORE END PRINT FACTORS----------------------------------");
+        System.out.println("-------------------------------BEFORE END PRINT FACTORS----------------------------------");
         for (Map.Entry<String, LinkedHashMap<String, Double>> e : factors.entrySet()) {
-//            System.out.println("factor for " + e.getKey() + ", is:");
-//            System.out.println(Utils.hashMapToString(e.getValue()));
+//            System.out.pri/ntln(Utils.hashMapToString(e.getValue()));
         }
-//        System.out.println("-----------------------------------------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------------------------------------");
 
         LinkedHashMap<String, Double> lastFactor = new LinkedHashMap<>();
 
@@ -211,25 +212,24 @@ public class Algorithm {
             }
         }
 
-        // Set variable elimination order for Part 2 if order is passed.
-        // If not, set an automatic order for Part 3.
-//        List<String> variableNames = order.isEmpty() ? CPT.getNames(lastFactor) : order;
         List<String> variableNames = CPT.getNames(lastFactor);
         if (variableNames.size() > 1) {
             variableNames.remove(queryVariable.getName());
-//            System.out.println("initial lastFactor: " + lastFactor);
+            System.out.println("Factors updated by evidence:: ");
+            System.out.println(Utils.hashMapToString(lastFactor));
             for (String name : variableNames) {
-//                System.out.println("name: " + name);
+                System.out.println("Name: " + name);
                 lastFactor = CPT.eliminate(lastFactor, bn.getVariableByName(name), counter);
-//                System.out.println("lastFactor: " + lastFactor);
+                System.out.println("Factors after eliminate " + name + ": ");
+                System.out.println(Utils.hashMapToString(lastFactor));
             }
         }
 
         // Normalizing the lastFactor
         lastFactor = normalize(lastFactor, counter);
-//        System.out.println("lastFactor: (after normalize)");
+        System.out.println("Probability: (after normalize)");
 //        System.out.println("counter: " + counter);
-//        System.out.println(Utils.hashMapToString(lastFactor));
+        System.out.println(Utils.hashMapToString(lastFactor));
 
         double probability = 0.0;
         for (Map.Entry<String, Double> factor : lastFactor.entrySet()) {
@@ -245,10 +245,13 @@ public class Algorithm {
         // The probability for given variable
         result.add(probability);
         // The number of additions
-        result.add((double) counter.getSumCount());
+        result.add((double) counter.getNumberOfAdditions());
+        System.out.println("The number of additions: ");
+        System.out.println(counter.getNumberOfAdditions());
         // The number of multiples
-        result.add((double) counter.getMultiCount());
-//        System.out.println("counter: " + counter);
+        result.add((double) counter.getNumberOfMultiplies());
+        System.out.println("The number of multiples: ");
+        System.out.println(counter.getNumberOfMultiplies());
 
         return result;
     }
