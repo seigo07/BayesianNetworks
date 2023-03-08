@@ -1,7 +1,7 @@
 import java.util.*;
 
 /**
- * The class
+ * The class for the Variable Elimination Algorithm
  */
 public class VariableElimination {
 

@@ -1,37 +1,36 @@
-// A Java program to print topological
-// sorting of a DAG
 import java.util.*;
 
-// This class represents a directed graph
-// using adjacency list representation
+/**
+ * The class for the Topological Sort Algorithm
+ */
 class TopologicalSort {
-    // No. of vertices
+
+    // Number of vertices
     private int V;
 
-    // Adjacency List as ArrayList of ArrayList's
+    // Adjacency List
     private ArrayList<ArrayList<Integer> > adj;
 
     // Constructor
     TopologicalSort(int v) {
         V = v;
-        adj = new ArrayList<ArrayList<Integer> >(v);
-        for (int i = 0; i < v; ++i)
-            adj.add(new ArrayList<Integer>());
+        adj = new ArrayList<>(v);
+        for (int i = 0; i < v; ++i) {
+            adj.add(new ArrayList<>());
+        }
     }
 
     // Function to add an edge into the graph
     void addEdge(int v, int w) { adj.get(v).add(w); }
 
     // A recursive function used by topologicalSort
-    void topologicalSortUtil(int v, boolean visited[],
-                             Stack<Integer> stack)
-    {
+    void topologicalSortUtil(int v, boolean visited[], Stack<Integer> stack) {
+
         // Mark the current node as visited.
         visited[v] = true;
         Integer i;
 
-        // Recur for all the vertices adjacent
-        // to thisvertex
+        // Recur for all the vertices adjacent to this vertex
         Iterator<Integer> it = adj.get(v).iterator();
         while (it.hasNext()) {
             i = it.next();
@@ -39,14 +38,12 @@ class TopologicalSort {
                 topologicalSortUtil(i, visited, stack);
         }
 
-        // Push current vertex to stack
-        // which stores result
+        // Push current vertex to stack which stores result
         Integer integer = Integer.valueOf(v);
         stack.push(integer);
     }
 
-    // The function to do Topological Sort.
-    // It uses recursive topologicalSortUtil()
+    // The function to do Topological Sort which uses recursive topologicalSortUtil()
     List<Integer> topologicalSort()
     {
         Stack<Integer> stack = new Stack<Integer>();
@@ -56,16 +53,14 @@ class TopologicalSort {
         for (int i = 0; i < V; i++)
             visited[i] = false;
 
-        // Call the recursive helper
-        // function to store
-        // Topological Sort starting
-        // from all vertices one by one
+        // Call the recursive helper function to store
+        // Topological Sort starting from all vertices one by one
         for (int i = 0; i < V; i++)
             if (visited[i] == false)
                 topologicalSortUtil(i, visited, stack);
 
         List<Integer> sortedVariables = new ArrayList<>();
-        // Print contents of stack
+
         while (stack.empty() == false)
             sortedVariables.add(stack.pop());
 
