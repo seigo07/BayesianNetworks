@@ -1,35 +1,35 @@
 
 /**
- * The class for counting the number of additions and multiples
+ * The class for counting the number of additions and multiplies
  */
 public class Counter {
 
-    private int sumCount;
-    private int multiCount;
+    private int numberOfAdditions;
+    private int numberOfMultiplies;
 
     public Counter() {
-        this.sumCount = 0;
-        this.multiCount = 0;
+        this.numberOfAdditions = 0;
+        this.numberOfMultiplies = 0;
     }
 
     public void sumAdd(int add) {
-        this.sumCount += add;
+        this.numberOfAdditions += add;
     }
 
     public void multiAdd(int mul) {
-        this.multiCount += mul;
+        this.numberOfMultiplies += mul;
     }
 
-    public int getSumCount() {
-        return sumCount;
+    public int getNumberOfAdditions() {
+        return numberOfAdditions;
     }
 
-    public int getMultiCount() {
-        return multiCount;
+    public int getNumberOfMultiplies() {
+        return numberOfMultiplies;
     }
 
     @Override
     public String toString() {
-        return this.sumCount + "," + this.multiCount;
+        return this.numberOfAdditions + "," + this.numberOfMultiplies;
     }
 }

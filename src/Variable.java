@@ -8,7 +8,6 @@ public class Variable {
     private List<Variable> parents;
     private final List<String> outcomes;
     private LinkedHashMap<String, Double> cpt;
-    private boolean shaded;
     private boolean fromChild;
     public boolean uninitialized;
 
@@ -22,7 +21,6 @@ public class Variable {
         this.name = name;
         this.outcomes = outcomes;
         this.cpt = new LinkedHashMap<>();
-        this.shaded = false;
         this.uninitialized = false;
         this.fromChild = false;
     }
@@ -78,22 +76,6 @@ public class Variable {
     }
 
     /**
-     * set shaded - using for the bayes ball algorithm
-     *
-     * @param shaded - true or false
-     */
-    public void setShade(boolean shaded) {
-        this.shaded = shaded;
-    }
-
-    /**
-     * @return - the status of shaded
-     */
-    public boolean isShaded() {
-        return this.shaded;
-    }
-
-    /**
      * @return the origin cpt of this variable
      */
     public LinkedHashMap<String, Double> getCPT() {
@@ -112,10 +94,6 @@ public class Variable {
      */
     public boolean isFromChild() {
         return this.fromChild;
-    }
-
-    public void setFromChild(boolean fromParents) {
-        this.fromChild = fromParents;
     }
 
     /**

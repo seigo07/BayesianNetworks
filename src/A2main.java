@@ -9,21 +9,13 @@ import java.util.*;
  */
 public class A2main {
 
-    private static final String INVALID_ARGS_ERROR = "Usage: java A2main <Pn> <NID>";
-
     public static void main(String[] args) {
-
-        // Validate args.
-        if (args.length != 2) {
-            System.out.println(INVALID_ARGS_ERROR);
-            System.exit(-1);
-        }
 
         // Validate file.
         String filePath = args[1];
         File file = new File(filePath);
         if (!file.exists() || file.isDirectory()) {
-            System.out.println("Error: Invalid file path given for <NID>.\n" + INVALID_ARGS_ERROR);
+            System.out.println("Error: Invalid file path given for <NID>.\n");
             System.exit(-1);
         }
 
@@ -31,8 +23,6 @@ public class A2main {
         Document doc = FileManager.readXML(filePath);
         List<Variable> variables = new ArrayList<>(FileManager.buildVariables(doc));
         BN bn = new BN(variables);
-        // Output text for output file
-        StringBuilder output = new StringBuilder();
         Scanner sc = new Scanner(System.in);
 
         switch (args[0]) {
@@ -42,7 +32,7 @@ public class A2main {
                 String variable = query[0];
                 String value = query[1];
 
-                List<Double> results = Algorithm.VE(variable, value, new ArrayList<>(), new ArrayList<>(), bn);
+                List<Double> results = VariableElimination.VE(variable, value, new ArrayList<>(), new ArrayList<>(), bn);
                 double result = results.get(0);
                 printResult(result);
             }
@@ -57,17 +47,9 @@ public class A2main {
                 List<String> order = new ArrayList<>(Arrays.asList(inputOrder));
 
                 // execute query of p(variable=value|evidence) with an order
-                List<Double> results = Algorithm.VE(variable, value, new ArrayList<>(), order, bn);
+                List<Double> results = VariableElimination.VE(variable, value, new ArrayList<>(), order, bn);
                 double result = results.get(0);
                 printResult(result);
-
-                // need to save output to output txt file...
-//                output.append(UtilFunctions.roundFiveDecimalPlaces(results.get(0)));
-//                output.append(",");
-//                output.append((long)Math.floor(results.get(1)));
-//                output.append(",");
-//                output.append((long)Math.floor(results.get(2)));
-//                System.out.println("output:\n" + output);
             }
             break;
 
@@ -78,28 +60,59 @@ public class A2main {
                 String value = query[1];
                 ArrayList<String[]> evidence = getEvidence(sc);
                 // execute query of p(variable=value|evidence) with an order
-                List<Double> results = Algorithm.VE(variable, value, evidence, new ArrayList<>(), bn);
+                List<Double> results = VariableElimination.VE(variable, value, evidence, new ArrayList<>(), bn);
                 double result = results.get(0);
                 printResult(result);
-
-                // need to save output to output txt file...
-//                output.append(UtilFunctions.roundFiveDecimalPlaces(results.get(0)));
-//                output.append(",");
-//                output.append((long)Math.floor(results.get(1)));
-//                output.append(",");
-//                output.append((long)Math.floor(results.get(2)));
-//                System.out.println("output:\n" + output);
             }
             break;
 
             case "P4": {
-                // construct the network based on the specification in args[1]
 
+                // Validate a given BN should be DAG
+                HashMap<String, Integer> variablesWithNumber = TopologicalSort.getVariablesWithNumber(variables);
+                TopologicalSort bna = new TopologicalSort(variablesWithNumber.size());
+
+                // BNA
+                if (variablesWithNumber.size() == 4) {
+                    bna.addEdge(variablesWithNumber.get("A"), variablesWithNumber.get("B"));
+                    bna.addEdge(variablesWithNumber.get("B"), variablesWithNumber.get("C"));
+                    bna.addEdge(variablesWithNumber.get("C"), variablesWithNumber.get("D"));
+                // BNB
+                } else if (variablesWithNumber.size() == 6) {
+                    bna.addEdge(variablesWithNumber.get("J"), variablesWithNumber.get("K"));
+                    bna.addEdge(variablesWithNumber.get("K"), variablesWithNumber.get("M"));
+                    bna.addEdge(variablesWithNumber.get("L"), variablesWithNumber.get("M"));
+                    bna.addEdge(variablesWithNumber.get("M"), variablesWithNumber.get("N"));
+                    bna.addEdge(variablesWithNumber.get("M"), variablesWithNumber.get("O"));
+                // BNC
+                } else if (variablesWithNumber.size() == 7) {
+                    bna.addEdge(variablesWithNumber.get("P"), variablesWithNumber.get("Q"));
+                    bna.addEdge(variablesWithNumber.get("R"), variablesWithNumber.get("S"));
+                    bna.addEdge(variablesWithNumber.get("Q"), variablesWithNumber.get("S"));
+                    bna.addEdge(variablesWithNumber.get("S"), variablesWithNumber.get("U"));
+                    bna.addEdge(variablesWithNumber.get("R"), variablesWithNumber.get("V"));
+                    bna.addEdge(variablesWithNumber.get("Q"), variablesWithNumber.get("V"));
+                    bna.addEdge(variablesWithNumber.get("S"), variablesWithNumber.get("Z"));
+                    bna.addEdge(variablesWithNumber.get("V"), variablesWithNumber.get("Z"));
+                }
+
+                List<Integer> sortedVariables = bna.topologicalSort();
+                List<String> sortedOrder = bna.getSortedOrder(sortedVariables, variablesWithNumber);
+//                System.out.println("sortedOrder: "+sortedOrder);
+
+                // construct the network based on the specification in args[1]
+                String[] query = getQueriedNode(sc);
+                String variable = query[0];
+                String value = query[1];
+                List<Double> results = VariableElimination.VE(variable, value, new ArrayList<>(), new ArrayList<>(), bn);
+                double result = results.get(0);
+                printResult(result);
             }
+            break;
 
             default: {
                 // Invalid args[0]
-                System.out.println(INVALID_ARGS_ERROR);
+                System.out.println("Invalid args[0]");
                 System.exit(-1);
             }
             break;
