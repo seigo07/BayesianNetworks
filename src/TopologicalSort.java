@@ -5,13 +5,19 @@ import java.util.*;
  */
 class TopologicalSort {
 
-    // Number of vertices
+    /**
+     * Number of vertices
+     */
     private int V;
 
-    // Adjacency List
-    private ArrayList<ArrayList<Integer> > adj;
+    /**
+     * Adjacency List
+     */
+    private ArrayList<ArrayList<Integer>> adj;
 
-    // Constructor
+    /**
+     * Constructor
+     */
     TopologicalSort(int v) {
         V = v;
         adj = new ArrayList<>(v);
@@ -20,10 +26,16 @@ class TopologicalSort {
         }
     }
 
-    // Function to add an edge into the graph
-    void addEdge(int v, int w) { adj.get(v).add(w); }
+    /**
+     * Adding an edge into the graph
+     */
+    void addEdge(int v, int w) {
+        adj.get(v).add(w);
+    }
 
-    // A recursive function used by topologicalSort
+    /**
+     * A recursive function used by topologicalSort
+     */
     void topologicalSortUtil(int v, boolean visited[], Stack<Integer> stack) {
 
         // Mark the current node as visited.
@@ -43,9 +55,12 @@ class TopologicalSort {
         stack.push(integer);
     }
 
-    // The function to do Topological Sort which uses recursive topologicalSortUtil()
-    List<Integer> topologicalSort()
-    {
+    /**
+     * Doing Topological Sort which uses recursive topologicalSortUtil()
+     *
+     * @return the list of the sortedVariable
+     */
+    List<Integer> topologicalSort() {
         Stack<Integer> stack = new Stack<Integer>();
 
         // Mark all the vertices as not visited
@@ -67,22 +82,29 @@ class TopologicalSort {
         return sortedVariables;
     }
 
+    /**
+     * Getting variables with number
+     *
+     * @return the list of the variable with number
+     */
     public static HashMap<String, Integer> getVariablesWithNumber(List<Variable> variables) {
         HashMap<String, Integer> variablesWithNumber = new HashMap<>();
         for (int i = 0; i < variables.size(); i++) {
             variablesWithNumber.put(variables.get(i).getName(), i);
         }
-        for (Map.Entry<String, Integer> v :variablesWithNumber.entrySet()) {
-            System.out.println("key: "+v.getKey()+" value:"+v.getValue());
-        }
         return variablesWithNumber;
     }
 
+    /**
+     * Getting sorted order
+     *
+     * @return sortedOrder
+     */
     public List<String> getSortedOrder(List<Integer> sortedVariables, HashMap<String, Integer> variablesWithNumber) {
         List<String> sortedOrder = new ArrayList<>();
-        for(Map.Entry<String, Integer> entry: variablesWithNumber.entrySet()) {
-            for (Integer v:sortedVariables) {
-                if(entry.getValue() == v) {
+        for (Map.Entry<String, Integer> entry : variablesWithNumber.entrySet()) {
+            for (Integer v : sortedVariables) {
+                if (entry.getValue() == v) {
                     sortedOrder.add(entry.getKey());
                     break;
                 }

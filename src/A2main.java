@@ -9,21 +9,13 @@ import java.util.*;
  */
 public class A2main {
 
-    private static final String INVALID_ARGS_ERROR = "Usage: java A2main <Pn> <NID>";
-
     public static void main(String[] args) {
-
-        // Validate args.
-        if (args.length != 2) {
-            System.out.println(INVALID_ARGS_ERROR);
-            System.exit(-1);
-        }
 
         // Validate file.
         String filePath = args[1];
         File file = new File(filePath);
         if (!file.exists() || file.isDirectory()) {
-            System.out.println("Error: Invalid file path given for <NID>.\n" + INVALID_ARGS_ERROR);
+            System.out.println("Error: Invalid file path given for <NID>.\n");
             System.exit(-1);
         }
 
@@ -106,7 +98,7 @@ public class A2main {
 
                 List<Integer> sortedVariables = bna.topologicalSort();
                 List<String> sortedOrder = bna.getSortedOrder(sortedVariables, variablesWithNumber);
-                System.out.println("sortedOrder: "+sortedOrder);
+//                System.out.println("sortedOrder: "+sortedOrder);
 
                 // construct the network based on the specification in args[1]
                 String[] query = getQueriedNode(sc);
@@ -116,10 +108,11 @@ public class A2main {
                 double result = results.get(0);
                 printResult(result);
             }
+            break;
 
             default: {
                 // Invalid args[0]
-                System.out.println(INVALID_ARGS_ERROR);
+                System.out.println("Invalid args[0]");
                 System.exit(-1);
             }
             break;
