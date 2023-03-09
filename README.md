@@ -17,4 +17,7 @@ Bayesian networks.
 
 * Please run the following command
 ```
+cd CS5011_A2/src
+javac A2main.java
+java A2main P1 xml/BNA.xml
 ```
