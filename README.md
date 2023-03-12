@@ -1,4 +1,4 @@
-# CS5011 Assignment 1
+# Project
 
 Uncertainty - Bayesian Networks.
 
@@ -10,7 +10,6 @@ Bayesian networks.
 
 ### Dependencies
 
-* MacOS Ventura 13.1
 * Java Version: openjdk 19.0.1
 
 ### Executing program
