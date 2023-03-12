@@ -4,7 +4,9 @@ Uncertainty - Bayesian Networks.
 
 ## Description
 
-Bayesian networks.
+Modelling and making probabilistic inferences with Bayesian networks (BNs).
+
+Employing the variable elimination algorithm for a general BN inference.
 
 ## Getting Started
 
