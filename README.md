@@ -8,6 +8,10 @@ Modelling and making probabilistic inferences with Bayesian networks (BNs).
 
 Employing the variable elimination algorithm for a general BN inference.
 
+<img width="576" alt="Screenshot 2023-03-12 at 00 44 01" src="https://user-images.githubusercontent.com/118636537/224518116-f5c8de35-bc97-425e-b225-75ee2731eedc.png">
+<img width="583" alt="Screenshot 2023-03-12 at 00 44 12" src="https://user-images.githubusercontent.com/118636537/224518117-cb40e7a7-bde9-4532-b210-a9b06bce6c46.png">
+<img width="582" alt="Screenshot 2023-03-12 at 00 44 29" src="https://user-images.githubusercontent.com/118636537/224518118-ec89d022-4f4d-466c-a389-8b0ac5c1146c.png">
+
 ## Getting Started
 
 ### Dependencies
