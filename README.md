@@ -24,5 +24,17 @@ Employing the variable elimination algorithm for a general BN inference.
 ```
 cd BayesianNetworks/src
 javac Main.java
-java Main P1 xml/BNA.xml
+java Main <P1|P2|P3|> xml/<BNA|BNB|BNC|>.xml
 ```
+
+* P1 (with variable and value)
+
+<img width="98" alt="Screenshot 2023-03-12 at 00 55 50" src="https://user-images.githubusercontent.com/118636537/224518467-c46461b6-1253-499c-9ee1-19c7f237c905.png">
+
+* P2 (with variable, value, and order)
+
+<img width="171" alt="Screenshot 2023-03-12 at 00 56 36" src="https://user-images.githubusercontent.com/118636537/224518476-46f42510-98d5-41ca-963e-bcd20eee81cb.png">
+
+* P3 (with variable, value, and evidence)
+
+<img width="150" alt="Screenshot 2023-03-12 at 00 58 14" src="https://user-images.githubusercontent.com/118636537/224518480-80941038-c391-4b29-bab1-ee015e313234.png">
