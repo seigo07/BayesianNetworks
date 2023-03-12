@@ -18,7 +18,7 @@ Employing the variable elimination algorithm for a general BN inference.
 
 * Please run the following command
 ```
-cd CS5011_A2/src
-javac A2main.java
-java A2main P1 xml/BNA.xml
+cd BayesianNetworks/src
+javac Main.java
+java Main P1 xml/BNA.xml
 ```

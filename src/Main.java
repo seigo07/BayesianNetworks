@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Main class.
  */
-class A2main {
+class Main {
 
     public static void main(String[] args) {
 
